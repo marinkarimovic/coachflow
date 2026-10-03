@@ -74,7 +74,7 @@
     try{
       const client=await loadClient();
       const result=await client.auth.getUser();
-      if(result.error && !/Auth session missing/i.test(result.error.message||'')) throw result.error;
+      if(result.error && !String(result.error.message||'').toLowerCase().includes('auth session missing')) throw result.error;
       const user=result.data && result.data.user;
       if(!user) {
         cloudRevision=null;loggedUserId=null;
