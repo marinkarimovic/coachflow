@@ -48,7 +48,7 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v10`.
+- Offline cache version: `coachflow-static-v11`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
@@ -66,7 +66,7 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 
 ## CoachFlow v1.8 · Anwesenheit, Entwicklung und Turnierteams
 
-**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v10`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
+**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v11`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
 
 ### v1.6 – Historische Anwesenheit
 
@@ -86,7 +86,7 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 
 ### v1.8 – Teamgenerator
 
-- Erzeugt Mannschaften aus dem gesamten Kader oder nur aus den für das nächste Training als anwesend markierten Kindern.
+- Erzeugt Mannschaften aus dem gesamten Kader oder nur aus den für das nächste Training als anwesend markierten Kindern. Anschließend lassen sich die Turnierteilnehmer **einzeln ab- und anwählen**, ohne die Trainingsanwesenheit zu verändern.
 - Modus **fair durchmischen**, **ähnliches Entwicklungsniveau** oder **zufällig durchmischen**; Kinder ohne Einschätzung werden neutral gewichtet.
 - Automatische, möglichst gleich große Mannschaften und eine einfache Verteilung der Stammgruppen. Das Ergebnis ist ein Vorschlag, kein Leistungsurteil oder mathematisch garantierter Fairness-Nachweis.
 - Jeder Spieler kann manuell einer anderen Mannschaft zugeteilt werden, danach Aufstellung speichern.
