@@ -48,7 +48,7 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v7`.
+- Offline cache version: `coachflow-static-v10`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
@@ -63,3 +63,44 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 - **Nicht neu registrieren, wenn bereits ein Magic-Link-Konto besteht:** im gleichen Konto anmelden und dort ein Passwort setzen.
 - Der Standard-E-Mail-Versand von Supabase ist nur für autorisierte Projektteam-Adressen und Testzwecke verfügbar; die erstmalige Bestätigung kann E-Mail erfordern. Für echte Vereinsnutzung mit weiteren Trainern einen eigenen SMTP-Anbieter konfigurieren. Keine Deaktivierung der E-Mail-Bestätigung nur zum Umgehen dieser Beschränkung.
 - Keine automatische Cloud-Überschreibung oder Speicherung von Passwörtern in CoachFlow-JSON-Backups. Siehe [Datenbankanleitung](docs/database-setup.md).
+
+## CoachFlow v1.8 · Anwesenheit, Entwicklung und Turnierteams
+
+**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v10`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
+
+### v1.6 – Historische Anwesenheit
+
+- Monat auswählen, dokumentierte Termine aufrufen oder weitere Trainingstage per Datum erfassen.
+- Jedes Kind kann als **anwesend**, **entschuldigt**, **abwesend** oder **nicht erfasst** markiert werden.
+- Einträge müssen ausdrücklich bestätigt werden. Historische, lediglich geplante Trainings werden **nicht** als besucht gezählt.
+- Monatsübersicht mit Anwesenheitsquote pro Kind und Auszeichnung „bei allen erfassten Trainingsterminen dabei“ (nur wenn für das Kind jeder bestätigte Termin ausdrücklich als `present` dokumentiert ist).
+- Wird ein Training aus dem Live-Planer abgeschlossen, fordert die App vorher zur Überprüfung der tatsächlichen Anwesenheit auf und speichert nach Bestätigung einen Anwesenheits-Snapshot zusammen mit dem Trainingsarchiv. Ein unmarkiertes Kind wird dabei gemäß dem vorherigen Häkchenstand als anwesend betrachtet: **vor dem Abschluss unbedingt prüfen**.
+- Frühere Screenshots liefern keinen Nachweis individueller tatsächlicher Anwesenheit; es gibt daher keine erfundenen Rückwirkungsdaten.
+
+### v1.7 – Entwicklungsstufen
+
+- Unabhängige, vertrauliche Einschätzung je Kind: **A** (weit entwickelt), **B** (fortgeschritten), **C** (in Entwicklung), **D** (mehr Begleitung), oder **offen**.
+- Die Einstufung kann jederzeit geändert oder entfernt werden; der Änderungszeitpunkt wird gespeichert.
+- Die bestehende `baseGroup` und die Trainings-`overrides` werden dabei **nicht** verändert. Der Standardwert ist `offen`.
+- Kein öffentliches Ranking; die Bewertungen dürfen nur in einem geschützten Trainerbereich verwendet werden und sollten regelmäßig fachlich überprüft werden.
+
+### v1.8 – Teamgenerator
+
+- Erzeugt Mannschaften aus dem gesamten Kader oder nur aus den für das nächste Training als anwesend markierten Kindern.
+- Modus **fair durchmischen**, **ähnliches Entwicklungsniveau** oder **zufällig durchmischen**; Kinder ohne Einschätzung werden neutral gewichtet.
+- Automatische, möglichst gleich große Mannschaften und eine einfache Verteilung der Stammgruppen. Das Ergebnis ist ein Vorschlag, kein Leistungsurteil oder mathematisch garantierter Fairness-Nachweis.
+- Jeder Spieler kann manuell einer anderen Mannschaft zugeteilt werden, danach Aufstellung speichern.
+- Gespeicherte Aufstellungen können wieder geöffnet oder als **CSV** exportiert werden.
+- Link zu FUNiño Matchday. **Noch keine direkte Übertragung oder automatische Mannschaftsübernahme durch FUNiño Matchday**; der CSV-Export ist eine allgemeine Teamliste.
+
+### Speicherung und Sicherheit
+
+- Kein neues Konto und keine neue Datenbankmigration nötig: Die Erweiterung speichert ihre Datensätze ausschließlich unter `extensionsV18` im **bestehenden** `coachflow-prototype-v1`-JSON-Snapshot.
+- Offline-/lokal nutzbar. Der vorhandene Supabase-Sync arbeitet weiterhin **manuell** und speichert den vollständigen Snapshot erst, wenn du eine Cloud-Sicherung auslöst.
+- Die öffentliche GitHub-Codebasis enthält ausschließlich die allgemeine Implementierung und Demokinder. **Bitte keine echten Spielerlisten, Entwicklungseinschätzungen oder Anwesenheitsdaten in GitHub committen.**
+- Zugriff auf echte Kinderdaten muss vor produktivem Mehrtrainerbetrieb rollenbasiert mit angemessenen Datenschutz- und Löschregelungen abgesichert werden.
+- Vor Updates und dem Laden fremder Cloud-Snapshots bitte ein lokales JSON-Backup erstellen.
+
+### Nächster Ausbau
+
+Eine echte Vereinsplattform mit Team-Logins, Einladungen, nutzerspezifischen Freigaben und Zahlungsmodell ist **nicht Teil von v1.8**. Die aktuelle Cloud-Sicherung ist weiterhin eine private Benutzersicherung, keine gemeinsame Vereinsdatenbank.
