@@ -1,14 +1,16 @@
-/* CoachFlow prototype · static offline cache */
-const CACHE = 'coachflow-static-v2';
-const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
+/* CoachFlow v1.1: network-first documents; offline fallback */
+const CACHE = 'coachflow-static-v3';
+const ASSETS = ['./index.html','./manifest.webmanifest','./icon-192.png'];
+self.addEventListener('install',event=>{
+  event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(ASSETS.map(path=>cache.add(path)))).then(()=>self.skipWaiting()));
 });
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('coachflow-static-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+self.addEventListener('activate',event=>{
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('coachflow-static-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
 });
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
-  event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
+self.addEventListener('fetch',event=>{
+  const req=event.request;
+  if(req.method!=='GET'||new URL(req.url).origin!==self.location.origin)return;
+  const isDoc=req.mode==='navigate'||new URL(req.url).pathname.endsWith('/index.html');
+  if(isDoc){event.respondWith(fetch(req).then(response=>{if(response.ok){const clone=response.clone();caches.open(CACHE).then(cache=>cache.put('./index.html',clone)).catch(()=>{});}return response;}).catch(()=>caches.match('./index.html')));return;}
+  event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(response=>{if(response.ok)caches.open(CACHE).then(cache=>cache.put(req,response.clone())).catch(()=>{});return response;})));
 });
