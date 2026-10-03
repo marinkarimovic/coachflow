@@ -16,7 +16,14 @@
     }
   }
   function showError(err) {
-    indicator('Cloud-Fehler: ' + (err && err.message ? err.message : String(err)), true);
+    const message=String(err?.message||err||'');
+    if(/email rate limit exceeded|email rate limit|too many emails/i.test(message)){
+      indicator('Zu viele Anmelde-E-Mails angefordert. Supabase hat den Versand vorübergehend begrenzt. Bitte keine weiteren Links anfordern; später erneut versuchen oder mit einem bereits gesetzten Passwort anmelden.',true);
+    }else if(/auth session missing/i.test(message)){
+      indicator('Hier besteht noch keine Anmeldung. Bitte mit dem bestehenden Passwort anmelden. Deine lokalen Daten bleiben erhalten.',false);
+    }else{
+      indicator('Cloud-Fehler: '+message,true);
+    }
   }
   function blockButtons(value) {
     busy = value;
