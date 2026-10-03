@@ -48,9 +48,18 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v6`.
+- Offline cache version: `coachflow-static-v7`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
 
-Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow_personal_state` erfolgreich ausgeführt. Das geschützte `coachflow_state` ist über die PWA unter **⋯ → Einstellungen & Daten → Cloud-Synchronisierung** erreichbar. Anmeldung per E-Mail-Link oder Code, manuelle lokale Sicherung und ausdrücklich bestätigtes Laden. Die vollständige Anleitung einschließlich der **noch manuell einzurichtenden Auth-URL und E-Mail-Template** liegt unter [docs/database-setup.md](docs/database-setup.md). Die lokale Speicherung bleibt bestehen; eine echte gemeinsame Teamdatenbank ist dies noch nicht.
+Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow_personal_state` erfolgreich ausgeführt. Das geschützte `coachflow_state` ist über die PWA unter **⋯ → Einstellungen & Daten → Cloud-Synchronisierung** erreichbar. Anmeldung per E-Mail + Passwort, alternativ Magic Link oder Einmalcode; bereits angemeldete Magic-Link-Nutzer können ein Passwort für dasselbe Konto festlegen. Cloud-Sicherung und Laden werden weiterhin ausdrücklich ausgelöst. Die vollständige Anleitung einschließlich der **noch manuell einzurichtenden Auth-URL und E-Mail-Template** liegt unter [docs/database-setup.md](docs/database-setup.md). Die lokale Speicherung bleibt bestehen; eine echte gemeinsame Teamdatenbank ist dies noch nicht.
+
+
+## Cloud v1.5 · Passwort-Login
+
+- E-Mail + Passwort anmelden (`auth.signInWithPassword`), neues Konto registrieren (`auth.signUp`) oder für das bestehende Magic-Link-Konto ein Passwort festlegen (`auth.updateUser`).
+- Der Magic Link und der sechsstellige Code bleiben als Alternativen erhalten.
+- **Nicht neu registrieren, wenn bereits ein Magic-Link-Konto besteht:** im gleichen Konto anmelden und dort ein Passwort setzen.
+- Der Standard-E-Mail-Versand von Supabase ist nur für autorisierte Projektteam-Adressen und Testzwecke verfügbar; die erstmalige Bestätigung kann E-Mail erfordern. Für echte Vereinsnutzung mit weiteren Trainern einen eigenen SMTP-Anbieter konfigurieren. Keine Deaktivierung der E-Mail-Bestätigung nur zum Umgehen dieser Beschränkung.
+- Keine automatische Cloud-Überschreibung oder Speicherung von Passwörtern in CoachFlow-JSON-Backups. Siehe [Datenbankanleitung](docs/database-setup.md).
