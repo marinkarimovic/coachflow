@@ -49,3 +49,8 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
 - Offline cache version: `coachflow-static-v5`.
+
+
+## Supabase – Datenbankvorbereitung
+
+Die erste, **noch nicht ausgeführte** private Cloud-Sync-Migration liegt unter [supabase/migrations/20261003_000001_create_coachflow_state.sql](supabase/migrations/20261003_000001_create_coachflow_state.sql). Eine Schritt-für-Schritt-Anleitung mit RLS-Prüfungen und Datenschutz-Hinweisen findest du unter [docs/database-setup.md](docs/database-setup.md). Solange das Supabase-Projekt nicht angelegt und die PWA nicht angebunden wurde, speichert CoachFlow weiterhin ausschließlich lokal.
