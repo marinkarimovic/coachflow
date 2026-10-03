@@ -54,6 +54,9 @@
     return await clientPromise;
   }
   async function verifiedUser(client){
+    const session=await client.auth.getSession();
+    if(session.error)throw session.error;
+    if(!session.data?.session)throw new Error('Du bist hier noch nicht angemeldet. Bitte E-Mail und Passwort verwenden.');
     const auth = await client.auth.getUser();
     if(auth.error) throw auth.error;
     const user = auth.data && auth.data.user;
@@ -73,8 +76,15 @@
     indicator('Verbinde mit Supabase …');
     try{
       const client=await loadClient();
+      const session=await client.auth.getSession();
+      if(session.error)throw session.error;
+      if(!session.data?.session){
+        cloudRevision=null;loggedUserId=null;
+        indicator('Noch nicht angemeldet. Bitte mit E-Mail und Passwort anmelden. Lokale Trainingsdaten bleiben erhalten.');
+        return;
+      }
       const result=await client.auth.getUser();
-      if(result.error && !String(result.error.message||'').toLowerCase().includes('auth session missing')) throw result.error;
+      if(result.error)throw result.error;
       const user=result.data && result.data.user;
       if(!user) {
         cloudRevision=null;loggedUserId=null;
