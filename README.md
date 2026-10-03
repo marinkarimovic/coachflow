@@ -29,3 +29,13 @@ Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht gelade
 - PDF, Layout und Medien wurden in einem mobilen Chromium-Browser getestet; ein iOS-Safari-Realgerätetest steht noch aus.
 
 Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Authentifizierung, Rollen, Einwilligungen/Rechtsgrundlagen und ein Datenschutzkonzept notwendig.
+
+## FUNiño Challenge – gezielte Integration (v1.2)
+
+- Bei der Übung **3 gegen 3 – Raus aus der Druckzone** gibt es einen Startknopf zur eigenständigen [FUNiño Challenge](https://marinkarimovic.github.io/funino-challenge/).
+- Das Werkzeug kann in **Medien & Tools** an passende weitere Übungen gebunden oder entfernt werden.
+- Die Schaltfläche steht bei verknüpften Übungen in den Details, in der Stationsplanung sowie im Live-Training bereit.
+- Die Challenge öffnet sich mit 45 Sekunden als Startwert und einem verifizierten Rücklink zu CoachFlow.
+- Bestehende gespeicherte Trainingsdaten werden nicht ersetzt; lediglich die neue Übung wird einmalig ergänzt.
+- Die beiden Apps synchronisieren derzeit **keine Ergebnisse, Punktestände oder Timer**. Bei laufendem CoachFlow-Timer bitte diesen vor dem Wechsel pausieren.
+- Auf dem iPhone kann der Wechsel in Safari stattfinden und nicht zwingend innerhalb der installierten Homescreen-App.
