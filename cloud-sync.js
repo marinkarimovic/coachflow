@@ -20,7 +20,7 @@
   }
   function blockButtons(value) {
     busy = value;
-    ['cloud-mail','cloud-upload','cloud-download','cloud-signout'].forEach(function(id){
+    ['cloud-mail','cloud-verify','cloud-upload','cloud-download','cloud-signout'].forEach(function(id){
       const el = document.getElementById(id);
       if(el) el.disabled = value;
     });
@@ -104,6 +104,21 @@
       indicator('Anmeldelink wurde angefordert. Prüfe dein E-Mail-Postfach und öffne den Link auf diesem Gerät. Hinweis: Die Redirect-Adresse muss in Supabase Auth freigeschaltet sein.');
     }catch(e){showError(e);}finally{blockButtons(false);}
   }
+  async function verifyCode(){
+    if(busy)return;
+    const email=(document.getElementById('cloud-email')?.value||'').trim();
+    const token=(document.getElementById('cloud-otp')?.value||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!/^\d{6}$/.test(token)){indicator('Bitte E-Mail-Adresse und 6-stelligen Code eingeben.',true);return;}
+    blockButtons(true);
+    try{
+      const client=await loadClient();
+      const response=await client.auth.verifyOtp({email:email,token:token,type:'email'});
+      if(response.error)throw response.error;
+      cloudRevision=null;
+      indicator('E-Mail-Code bestätigt. Du kannst nun deine lokalen Daten in der Cloud sichern.');
+      await refresh();
+    }catch(e){showError(e);}finally{blockButtons(false);}
+  }
   async function upload(){
     if(busy)return;
     blockButtons(true);
@@ -174,9 +189,10 @@
     const button=event.target.closest('button');
     if(!button)return;
     const id=button.id;
-    if(!['cloud-mail','cloud-upload','cloud-download','cloud-signout'].includes(id))return;
+    if(!['cloud-mail','cloud-verify','cloud-upload','cloud-download','cloud-signout'].includes(id))return;
     event.preventDefault();
     if(id==='cloud-mail')void signIn();
+    if(id==='cloud-verify')void verifyCode();
     if(id==='cloud-upload')void upload();
     if(id==='cloud-download')void download();
     if(id==='cloud-signout')void signOut();
