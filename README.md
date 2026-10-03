@@ -39,3 +39,13 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Bestehende gespeicherte Trainingsdaten werden nicht ersetzt; lediglich die neue Übung wird einmalig ergänzt.
 - Die beiden Apps synchronisieren derzeit **keine Ergebnisse, Punktestände oder Timer**. Bei laufendem CoachFlow-Timer bitte diesen vor dem Wechsel pausieren.
 - Auf dem iPhone kann der Wechsel in Safari stattfinden und nicht zwingend innerhalb der installierten Homescreen-App.
+
+
+## Mobile UI v1.3
+
+- Consistent responsive layouts at 320, 375, 390, 414 and 430 CSS pixels.
+- Date and time are stacked to prevent native iOS inputs from colliding; other training controls use compact, safe columns.
+- Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
+- History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
+- The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
+- Offline cache version: `coachflow-static-v5`.
