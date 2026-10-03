@@ -20,7 +20,7 @@
   }
   function blockButtons(value) {
     busy = value;
-    ['cloud-mail','cloud-verify','cloud-upload','cloud-download','cloud-signout'].forEach(function(id){
+    ['cloud-mail','cloud-verify','cloud-login-password-btn','cloud-register','cloud-set-password','cloud-upload','cloud-download','cloud-signout'].forEach(function(id){
       const el = document.getElementById(id);
       if(el) el.disabled = value;
     });
@@ -57,7 +57,7 @@
     const auth = await client.auth.getUser();
     if(auth.error) throw auth.error;
     const user = auth.data && auth.data.user;
-    if(!user) throw new Error('Bitte zuerst über den E-Mail-Link anmelden.');
+    if(!user) throw new Error('Bitte zuerst mit Passwort, E-Mail-Link oder Einmalcode anmelden.');
     if(loggedUserId && loggedUserId !== user.id) cloudRevision=null;
     loggedUserId=user.id;
     return user;
@@ -118,6 +118,82 @@
       indicator('E-Mail-Code bestätigt. Du kannst nun deine lokalen Daten in der Cloud sichern.');
       await refresh();
     }catch(e){showError(e);}finally{blockButtons(false);}
+  }
+  function getEmail(){
+    const email=(document.getElementById('cloud-email')?.value||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('Bitte eine gültige E-Mail-Adresse eingeben.');
+    return email;
+  }
+  function getNewPassword(){
+    const password=document.getElementById('cloud-new-password')?.value||'';
+    const confirmation=document.getElementById('cloud-confirm-password')?.value||'';
+    if(password.length<12)throw new Error('Bitte ein Passwort mit mindestens 12 Zeichen wählen.');
+    if(password!==confirmation)throw new Error('Die beiden Passwörter stimmen nicht überein.');
+    return password;
+  }
+  function clearPasswordInputs(){
+    ['cloud-login-password','cloud-new-password','cloud-confirm-password'].forEach(function(id){
+      const element=document.getElementById(id);
+      if(element)element.value='';
+    });
+  }
+  async function signInPassword(){
+    if(busy)return;
+    blockButtons(true);
+    try{
+      const email=getEmail();
+      const password=document.getElementById('cloud-login-password')?.value||'';
+      if(!password)throw new Error('Bitte dein Passwort eingeben.');
+      const client=await loadClient();
+      const result=await client.auth.signInWithPassword({email:email,password:password});
+      if(result.error)throw result.error;
+      cloudRevision=null;loggedUserId=null;
+      indicator('Anmeldung erfolgreich. Deine lokalen Trainingsdaten bleiben unverändert.');
+      await refresh();
+    }catch(err){showError(err);}finally{clearPasswordInputs();blockButtons(false);}
+  }
+  async function registerPassword(){
+    if(busy)return;
+    blockButtons(true);
+    try{
+      const email=getEmail();
+      const password=getNewPassword();
+      const client=await loadClient();
+      const existing=await client.auth.getUser();
+      if(existing.data?.user){
+        indicator('Du bist bereits angemeldet. Bitte nutze „Passwort für mein angemeldetes Konto festlegen“, damit kein zweites Konto entsteht.',true);
+        return;
+      }
+      const result=await client.auth.signUp({
+        email:email,password:password,
+        options:{emailRedirectTo:REDIRECT_TO}
+      });
+      if(result.error)throw result.error;
+      cloudRevision=null;loggedUserId=null;
+      if(result.data?.session){
+        indicator('Registrierung und Anmeldung erfolgreich. Die lokalen Daten bleiben unverändert.');
+        await refresh();
+      }else{
+        indicator('Registrierung angefordert. Falls eine Bestätigungs-E-Mail erforderlich ist, bitte diese zuerst öffnen. Der Supabase-Standardversand funktioniert nur für autorisierte Projektteam-Adressen.');
+      }
+    }catch(err){showError(err);}finally{clearPasswordInputs();blockButtons(false);}
+  }
+  async function setPassword(){
+    if(busy)return;
+    blockButtons(true);
+    try{
+      const client=await loadClient();
+      const user=await verifiedUser(client);
+      const emailField=(document.getElementById('cloud-email')?.value||'').trim();
+      if(emailField && emailField.toLowerCase()!==String(user.email||'').toLowerCase()){
+        throw new Error('Das E-Mail-Feld stimmt nicht mit deinem angemeldeten Konto überein ('+user.email+'). Bitte korrigieren.');
+      }
+      const password=getNewPassword();
+      if(!window.confirm('Passwort für das derzeit angemeldete Supabase-Konto '+user.email+' setzen bzw. ändern?'))return;
+      const result=await client.auth.updateUser({password:password});
+      if(result.error)throw result.error;
+      indicator('Passwort für '+user.email+' gespeichert. Beim nächsten Mal kannst du dich direkt mit E-Mail und Passwort anmelden. Deine Trainingsdaten bleiben erhalten.');
+    }catch(err){showError(err);}finally{clearPasswordInputs();blockButtons(false);}
   }
   async function upload(){
     if(busy)return;
@@ -189,10 +265,13 @@
     const button=event.target.closest('button');
     if(!button)return;
     const id=button.id;
-    if(!['cloud-mail','cloud-verify','cloud-upload','cloud-download','cloud-signout'].includes(id))return;
+    if(!['cloud-mail','cloud-verify','cloud-login-password-btn','cloud-register','cloud-set-password','cloud-upload','cloud-download','cloud-signout'].includes(id))return;
     event.preventDefault();
     if(id==='cloud-mail')void signIn();
     if(id==='cloud-verify')void verifyCode();
+    if(id==='cloud-login-password-btn')void signInPassword();
+    if(id==='cloud-register')void registerPassword();
+    if(id==='cloud-set-password')void setPassword();
     if(id==='cloud-upload')void upload();
     if(id==='cloud-download')void download();
     if(id==='cloud-signout')void signOut();
