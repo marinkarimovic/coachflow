@@ -1,56 +1,50 @@
-# CoachFlow · Cloud-Datenbank vorbereiten
+# CoachFlow – Supabase ist angebunden (Phase 1)
 
-## Status
-**Nur vorbereitet.** Diese Dateien wurden in GitHub versioniert, aber die Supabase-Datenbank wurde noch **nicht** angelegt und die laufende PWA noch **nicht** mit ihr verbunden. Vorhandene lokale Trainingsdaten bleiben unverändert.
+**Projekt:** `gzrstopdqsjdrrrzzhix` · EU Central · `https://gzrstopdqsjdrrrzzhix.supabase.co`
 
-## 1. Supabase-Projekt anlegen
-1. Im Supabase Dashboard ein eigenes Projekt `coachflow` anlegen (EU-Region auswählen, sofern passend).
-2. Unter **SQL Editor** die Datei `supabase/migrations/20261003_000001_create_coachflow_state.sql` **nur in diesem Projekt** ausführen. Keine anderen Projekte anfassen.
-3. Unter Authentication -> URL Configuration die veröffentlichte PWA als Site URL sowie die entsprechenden Redirect-URLs konfigurieren:
-   - `https://marinkarimovic.github.io/coachflow/`
-   - `https://marinkarimovic.github.io/coachflow/index.html`
-4. In Settings -> API Keys die **Project URL** und den **publishable key** für die App ermitteln. Diese zwei Werte dürfen in Browser-JavaScript stehen; **niemals** `service_role`, `sb_secret_...`, Datenbankkennwörter oder JWT-Secrets dort eintragen.
-5. E-Mail-Login via Supabase Auth verwenden (Magic Link oder OTP; Login nicht durch versteckte/harte Passwörter ersetzen).
+**Datenbankstatus:** Die Migration `create_coachflow_personal_state` ist in diesem Projekt erfolgreich ausgeführt. `public.coachflow_state` hat RLS und vier Eigentümer-Policies. Zum Zeitpunkt der Einrichtung waren 0 Datensätze vorhanden. Andere Projekte blieben unverändert.
 
-## 2. Sicherheitsprüfung nach dem Ausführen
-In SQL Editor:
+**App-Status:** Die öffentliche GitHub-Pages-App enthält ein optionales Cloud-Panel in `⋯ → Einstellungen & Daten → Cloud-Synchronisierung`. `cloud-sync.js` enthält ausschließlich die projektbezogene URL und einen öffentlichen `sb_publishable_...` Key. Die App lädt Supabase JS nur, wenn die Cloud-Funktion genutzt wird. Der bisherige `localStorage`-Schlüssel bleibt `coachflow-prototype-v1`.
+
+## Einmalig: Anmeldung im Supabase-Dashboard freigeben
+
+Öffne in **diesem** Supabase-Projekt **Authentication → URL Configuration**:
+
+- **Site URL:** `https://marinkarimovic.github.io/coachflow/`
+- **Redirect URLs:** `https://marinkarimovic.github.io/coachflow/` und optional `https://marinkarimovic.github.io/coachflow/index.html` (exakte URLs; kein pauschales `**` nötig).
+
+Unter **Authentication → Email Templates → Magic Link** den sechsstelligen Code zusätzlich in die Vorlage aufnehmen, z. B. `<p>Dein CoachFlow-Code: <strong>{{ .Token }}</strong></p><p><a href="{{ .ConfirmationURL }}">Alternativ direkt anmelden</a></p>`. **Keine der Vorlagen einfach blind überschreiben; den bestehenden Bestätigungslink beibehalten.** Die iPhone-Homescreen-PWA kann dann mit dem Code aus der E-Mail direkt angemeldet werden, selbst wenn ein Magic Link in Safari statt innerhalb der PWA geöffnet wird.
+
+Falls die App ausschließlich über einen Link verwendet wird, genügt die freigegebene Redirect-URL. Supabase Auth sendet standardmäßig einen Magic Link bei `signInWithOtp`. Pro Mailanforderung gelten Rate-Limits.
+
+Quellen: [Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls), [E-Mail-Passwortlose Anmeldung](https://supabase.com/docs/guides/auth/auth-email-passwordless), [E-Mail-Templates](https://supabase.com/docs/guides/auth/auth-email-templates).
+
+## Erste Cloud-Sicherung (ohne lokalen Datenverlust)
+
+1. CoachFlow auf dem iPhone öffnen. Unter `⋯ → Einstellungen & Daten` zuerst ein **JSON-Backup exportieren** und sicher aufbewahren.
+2. `Cloud-Synchronisierung` öffnen und deine E-Mail-Adresse eingeben. Anmeldelink anfordern.
+3. Bei installiertem Homescreen-Modus am einfachsten den **sechsstelligen Code** aus der E-Mail in der App eingeben (sofern das Template entsprechend angepasst wurde). Alternativ Anmeldelink im Browser öffnen.
+4. `Lokale Daten in Cloud sichern` klicken und bestätigen.
+5. Auf einem weiteren Gerät mit **demselben Supabase-Benutzerkonto** anmelden. Dort erst `Cloud-Daten auf dieses Gerät laden` drücken und den Warnhinweis bestätigen.
+6. Jede weitere Sicherung erfolgt **manuell**, nicht automatisch. Ein Versionscheck verhindert stilles Überschreiben neuerer Cloud-Daten; bei Konflikt JSON-Backups beider Geräte vergleichen.
+
+**Datenschutz:** In einem öffentlichen GitHub-Repository liegen weder Login-Passwörter noch Spielerlisten. In Supabase gespeicherte Datensätze sind durch Auth + RLS auf die zugehörige Nutzer-ID beschränkt. Für produktiven Betrieb mit echten Kinderdaten sind eine dokumentierte Rechtsgrundlage und Rollen-/Vereinszugriffsregeln erforderlich. Die Phase-1-Struktur ist noch **nicht** für Teamfreigaben geeignet.
+
+## Sicherheitsprüfung
 
 ```sql
-select schemaname, tablename, rowsecurity
+select schemaname,tablename,rowsecurity
 from pg_tables
-where schemaname = 'public' and tablename = 'coachflow_state';
+where schemaname='public' and tablename='coachflow_state';
 
-select policyname, cmd, roles, qual, with_check
+select policyname,cmd,roles,qual,with_check
 from pg_policies
-where schemaname = 'public' and tablename = 'coachflow_state'
+where schemaname='public' and tablename='coachflow_state'
 order by policyname;
 
-select grantee, privilege_type
-from information_schema.role_table_grants
-where table_schema='public' and table_name='coachflow_state'
-  and grantee in ('anon','authenticated')
-order by grantee, privilege_type;
+select has_table_privilege('anon','public.coachflow_state','SELECT') as anon_select,
+       has_table_privilege('anon','public.coachflow_state','INSERT') as anon_insert,
+       has_table_privilege('authenticated','public.coachflow_state','SELECT') as authenticated_select;
 ```
 
-Erwartet: `rowsecurity=true`, je eine SELECT/INSERT/UPDATE/DELETE Policy nur für `authenticated`, keine `anon`-Berechtigungen. Zusätzlich mit **zwei verschiedenen Testbenutzern** prüfen: Benutzer A darf ausschließlich seinen Datensatz lesen/schreiben; Benutzer B darf A nicht sehen. Die Migration wurde noch nicht gegen ein echtes Projekt getestet.
-
-## 3. Anbindung an die vorhandene PWA
-- Bestehender `localStorage`-Schlüssel ist `coachflow-prototype-v1`. Nicht umbenennen oder bei Login löschen.
-- Vor dem ersten Cloud-Sync expliziten Dialog anbieten: **„Lokale Daten übernehmen“**, **„Cloud-Daten laden“** oder **„Abbrechen“**; keine automatische Überschreibung.
-- Daten aus `localStorage` nach JSON prüfen und als `state` unter `user_id = auth.uid()` schreiben; niemals Benutzerdaten von einer E-Mail-Adresse ableiten.
-- Bei späteren Updates `revision` und `updated_at` behandeln und vor Konflikten warnen. Phase 1 hat **keine echte Mehrbenutzer-Konfliktauflösung**.
-- Bei fehlender Internetverbindung lokal weiterarbeiten; Sync-Status sichtbar anzeigen.
-- JSON-Backup vor dem ersten Sync exportieren. Die 2-MB-Grenze kann für große Bibliotheken später angehoben werden.
-
-## 4. Nächste Phase
-Nach erfolgreichem Einzelbenutzer-Sync normalisieren:
-`cf_club`, `cf_team`, `cf_team_member`, `cf_player`, `cf_group`, `cf_exercise`, `cf_training`, `cf_training_attendance`, `cf_training_group`, `cf_training_station`, `cf_training_rotation`, `cf_training_feedback`.
-Damit Stammgruppen von tagesbezogenen Umbesetzungen getrennt und echte gemeinsame Trainerpläne möglich werden. RLS muss Teamzugehörigkeit und Rolle für **jede Tabelle** berücksichtigen; Phase-1-Policies nicht blind auf geteilte Tabellen übernehmen.
-
-## Datenschutz
-Nur Demo- bzw. künstliche Kinderdaten für Entwicklung verwenden. Vor dem produktiven Einsatz mit echten Kindern: Authentifizierung, rollenbasierte Zugriffsprüfung, Zweckbindung, Verarbeitungsgrundlage, Löschkonzept und geeignete organisatorische Vereinbarungen prüfen. Projekt und Browserdaten werden nicht automatisch durch GitHub gesichert.
-
-Offizielle Informationen:
-- https://supabase.com/docs/guides/database/postgres/row-level-security
-- https://supabase.com/docs/guides/getting-started/api-keys
-- https://supabase.com/docs/guides/auth/auth-email-passwordless
+**Wichtig:** Ein browserseitiger Publishable Key ist kein Geheimnis und darf den Quellcode begleiten; `service_role`, `sb_secret_...` und Datenbankkennwörter dürfen **niemals** in HTML/JavaScript oder GitHub veröffentlicht werden.
