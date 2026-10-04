@@ -90,12 +90,39 @@
   .cfx-empty{color:#acc3bf;padding:10px 0;font-size:13px;line-height:1.4}
   .cfx-note{min-height:61px;resize:vertical}
   #cfx-notice{position:sticky;top:0;padding:11px 13px;border:1px solid #b9eb79;background:#223c31;color:#e7ffca;border-radius:11px;margin:0 0 10px;z-index:4}
-  @media(min-width:650px){#${ROOT_ID}{align-items:center}.cfx-dialog{max-height:92dvh;border-radius:20px}.cfx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+  /* v1.9: respect the installed iPhone safe area, prevent native input overflow */
+  #${ROOT_ID}{align-items:flex-start;padding-top:calc(env(safe-area-inset-top, 0px) + 10px);overflow:hidden}
+  .cfx-dialog{max-height:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable;scroll-padding-top:100px;border-radius:20px 20px 0 0;padding:12px clamp(12px,4vw,20px) calc(24px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+  .cfx-head{position:sticky;top:-12px;z-index:9;min-width:0;align-items:center;margin:0 0 12px;padding:12px 0 15px;background:linear-gradient(180deg,#102327 85%,rgba(16,35,39,.97));border-bottom:1px solid #304747}
+  .cfx-head > div{min-width:0;flex:1}
+  .cfx-head h2{font-size:clamp(25px,6.5vw,33px);line-height:1.13;overflow-wrap:anywhere}
+  .cfx-head .close{width:44px;height:44px;min-width:44px;flex:none}
+  .cfx-tabs{gap:7px;margin:0 0 18px;width:100%}
+  .cfx-tabs button{border-radius:13px;padding:10px 6px;min-width:0;min-height:48px;white-space:normal;line-height:1.2;text-align:center;font-size:clamp(12px,3.35vw,16px)}
+  .cfx-tabs button.active{box-shadow:inset 0 0 0 1px rgba(190,246,117,.22)}
+  .cfx-box,.cfx-stat,.cfx-label,.cfx-line,.cfx-calendar,.cfx-month-row{min-width:0}
+  .cfx-box{overflow-wrap:break-word}
+  .cfx-grid > *, .cfx-stats > * {min-width:0}
+  .cfx-input{min-width:0;max-width:100%;width:100%;font-size:16px;box-sizing:border-box}
+  .cfx-input[type=date],.cfx-input[type=time]{-webkit-appearance:none;appearance:none;min-width:0}
+  .cfx-date{white-space:normal;text-align:left;line-height:1.35;overflow-wrap:anywhere;max-width:100%}
+  .cfx-month-row{gap:10px}
+  .cfx-month-row > *{min-width:0}
+  .cfx-month-row .cfx-btn{flex:none}
+  .cfx-choice{min-width:0;max-width:min(41%,155px)}
+  .cfx-sub{font-size:14px;line-height:1.45}
+  .cfx-stats .cfx-stat span{overflow-wrap:anywhere}
+  .cfx-label{overflow-wrap:anywhere}
+  @media(min-width:650px){#${ROOT_ID}{align-items:center;padding:18px}.cfx-dialog{height:auto;max-height:calc(100dvh - 36px);border-radius:20px}.cfx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:600px){.cfx-grid{grid-template-columns:minmax(0,1fr)}.cfx-calendar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cfx-date{width:100%;padding:10px;min-height:55px}.cfx-month-row{flex-wrap:nowrap}.cfx-month-row .cfx-btn{min-width:42px}}
+  @media(max-width:390px){.cfx-dialog{padding-inline:12px}.cfx-tabs{gap:5px}.cfx-tabs button{padding:10px 4px;font-size:12px}.cfx-head h2{font-size:26px}.cfx-stats{gap:5px}.cfx-stat{padding:9px 7px}.cfx-calendar{grid-template-columns:minmax(0,1fr)}}
+
   @media(max-width:360px){.cfx-dialog{padding-left:11px;padding-right:11px}.cfx-line{gap:5px}.cfx-choice{max-width:112px}.cfx-stat{padding:8px 5px}.cfx-chip{padding:4px 6px}}
   `;document.head.append(el)}
   function launch(){const b=bridge();if(!b?.getState||!b?.mutate)return;style();let screen=$('#screen');if(!screen)return;let row=$('#cfx-shortcuts',screen);if(row)return;row=document.createElement('div');row.id='cfx-shortcuts';row.className='cfx-shortcuts';row.innerHTML='<button type="button" data-cfx="open" data-page="attendance">📅 Monatsanwesenheit</button><button type="button" data-cfx="open" data-page="development">⚽ Entwicklung</button><button type="button" data-cfx="open" data-page="tournament">🏆 Teamgenerator</button>';const head=$('.headline',screen);if(head)head.insertAdjacentElement('afterend',row);else screen.insertAdjacentElement('afterbegin',row)}
-  function makeRoot(){style();let root=document.getElementById(ROOT_ID);if(!root){root=document.createElement('div');root.id=ROOT_ID;root.setAttribute('role','presentation');root.innerHTML='<div class="cfx-dialog" role="dialog" aria-modal="true" aria-label="CoachFlow Spieler und Turniere"><div id="cfx-content"></div></div>';document.body.append(root)}return root}
-  function open(page){ui.page=page;ui.proposal=null;draw();makeRoot().classList.add('show');document.body.style.overflow='hidden'}
+  function makeRoot(){style();let root=document.getElementById(ROOT_ID);if(!root){root=document.createElement('div');root.id=ROOT_ID;root.setAttribute('role','presentation');root.innerHTML='<div class="cfx-dialog" role="dialog" aria-modal="true" aria-label="SpielfeldIQ Spieler und Turniere"><div id="cfx-content"></div></div>';document.body.append(root)}return root}
+  function open(page){ui.page=page;ui.proposal=null;draw();makeRoot().classList.add('show');document.body.style.overflow='hidden';const dialog=$('.cfx-dialog');if(dialog)dialog.scrollTop=0}
   function close(){ui.page=null;makeRoot().classList.remove('show');document.body.style.overflow=''}
   function layout(body){const names={attendance:'Anwesenheit',development:'Spielerentwicklung',tournament:'Turnier-Teams'};makeRoot();$('#cfx-content').innerHTML=`<div class="cfx-head"><div><div style="color:#bdf576;letter-spacing:2px;font-size:11px;font-weight:800">${esc(read()?.team||'COACHFLOW')} · ${esc(read()?.age||'TRAINERBEREICH')}</div><h2>${names[ui.page]}</h2></div><button class="cfx-btn secondary close" data-cfx="close" aria-label="Schließen">×</button></div><div class="cfx-tabs">${[['attendance','Anwesenheit'],['development','Entwicklung'],['tournament','Teams']].map(([id,label])=>`<button class="${ui.page===id?'active':''}" data-cfx="open" data-page="${id}">${label}</button>`).join('')}</div><div id="cfx-notice" hidden></div>${body}`}
   function draw(){if(!ui.page)return;const d=read();if(!d)return;layout(ui.page==='attendance'?renderAttendance(d):ui.page==='development'?renderDevelopment(d):renderTournament(d))}
@@ -167,7 +194,7 @@
     return out;
   }
   function saveTournament(){if(!ui.proposal)return;const t=ui.proposal;if(!validDate(t.date)){notice('Bitte ein gültiges Datum eingeben.');return}if(!t.teams.every(team=>team.members.length>0)){notice('Mindestens ein Team ist leer. Bitte Kinder zuweisen.');return}if(!confirm('Diese Aufstellung speichern? Stamm- und Tagesgruppen bleiben unverändert.'))return;const newItem=JSON.parse(JSON.stringify({...t,id:t.id||('turnier-'+Date.now())}));commit((d,x)=>{const i=x.tournaments.findIndex(it=>it.id===newItem.id);if(i<0)x.tournaments.push(newItem);else x.tournaments[i]=newItem});ui.proposal=newItem;draw();notice('Turnieraufstellung lokal gespeichert. Für Cloud-Sicherung die Cloud-Funktion öffnen.')}
-  function teamCSV(){const d=read(),p=ui.proposal;if(!p)return;const rows=[['Turnier','Datum','Mannschaft','Spieler','Stammgruppe']];for(const t of p.teams)for(const id of t.members){const x=d.players.find(y=>y.id===id);rows.push([p.title,p.date,t.name,x?.name||'',x?.baseGroup||''])}const csv='\ufeff'+rows.map(row=>row.map(s=>'"'+String(s||'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='CoachFlow-Teams-'+p.date+'.csv';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notice('CSV-Teamliste erstellt. Kein direkter Import in Matchday.')}
+  function teamCSV(){const d=read(),p=ui.proposal;if(!p)return;const rows=[['Turnier','Datum','Mannschaft','Spieler','Stammgruppe']];for(const t of p.teams)for(const id of t.members){const x=d.players.find(y=>y.id===id);rows.push([p.title,p.date,t.name,x?.name||'',x?.baseGroup||''])}const csv='\ufeff'+rows.map(row=>row.map(s=>'"'+String(s||'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='SpielfeldIQ-Teams-'+p.date+'.csv';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notice('CSV-Teamliste erstellt. Kein direkter Import in Matchday.')}
   function movePlayer(pid,dest){const t=ui.proposal?.teams.find(x=>x.id===dest);if(!t)return;for(const team of ui.proposal.teams)team.members=team.members.filter(id=>id!==pid);t.members.push(pid);draw();notice('Mannschaftswechsel übernommen. Bitte Aufstellung erneut speichern.')}
   document.addEventListener('click',e=>{const t=e.target.closest('[data-cfx]');if(!t)return;const act=t.dataset.cfx;if(act==='open'){open(t.dataset.page);return}if(act==='close'){close();return}if(!ui.page)return;
     if(act==='participant-toggle'){ui.participantOpen=!ui.participantOpen;return}
