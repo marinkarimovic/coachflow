@@ -37,7 +37,7 @@ migrateLegacy();
 for(const k of Object.keys(app.events)){const e=app.events[k];if(e&&typeof e==='object'){e.running=false;e.startedAt=null;}}
 let event=()=>app.events[app.active]??(app.events[app.active]=freshEvent());
 function matchDuration(e=event()){const x=Number(e?.duration);return Number.isInteger(x)&&x>=1&&x<=90?x:Math.max(1,Math.min(90,Math.round(Number(app.duration)||10)));}
-let view='plan',mainView='data',editingEventId=null,pendingImport=null,pendingImage=null,importMetaSelection=false,lastTick=Date.now();
+let view='plan',mainView='data',editingEventId=null,pendingImport=null,pendingImage=null,importMetaSelection=false,lastTick=Date.now(),lastBridgeCheckpoint=0;
 function save(){try{BRIDGE.saveMode('hall',app)}catch(e){console.error('SpielfeldIQ Hallenturnier-Speicherung:',e)}};
 function label(ev){const d=String(ev.date||'').split('-');return d.length===3?`${d[2]}.${d[1]}.${d[0]}`:'Ohne Datum';}
 function setMessage(msg){$('importPreview').textContent=msg;}
@@ -91,7 +91,7 @@ $('goalOther').onclick=()=>addGoal(f,'theirs','Gegner');$('undoGoal').onclick=()
 $('correctScore').onclick=()=>editScore(f.id);if($('deleteLiveMatch'))$('deleteLiveMatch').onclick=()=>deleteFixture(f.id);$('hallStart').onclick=()=>{tick();event().running=!event().running;lastTick=Date.now();save();renderLive();};$('hallTimerReset').onclick=()=>{event().running=false;event().seconds=matchDuration()*60;save();renderLive();};$('hallTimerPlus').onclick=()=>{event().seconds+=60;save();renderLive();};$('hallComplete').onclick=async()=>{tick();event().running=false;save();if(await appConfirm(`Spiel ${app.team} gegen ${opponent} mit ${ourScore}:${otherScore} abschließen?`,'Match abschließen','Abschließen')){f.homeGoals??=0;f.awayGoals??=0;f.completed=true;event().liveId=null;save();showTab('plan');}else renderLive();};}
 function addGoal(f,side,player){tick();let home=(side==='ours')===(teamKey(f.home)===teamKey(app.team));const key=home?'homeGoals':'awayGoals';f.homeGoals=(f.homeGoals??0)+(home?1:0);f.awayGoals=(f.awayGoals??0)+(home?0:1);f.events.push({side,player,time:formatClock(matchDuration()*60-event().seconds)});afterScore();}
 function afterScore(){syncFinal();save();render();}
-function tick(){const e=event();if(!e.running)return;const now=Date.now(),seconds=Math.floor((now-lastTick)/1000);if(seconds<=0)return;lastTick+=seconds*1000;e.seconds=Math.max(0,e.seconds-seconds);if(!e.seconds){e.running=false;if(navigator.vibrate)navigator.vibrate([150,100,150]);}const clock=$('hallClock');if(clock)clock.textContent=formatClock(e.seconds);save();}
+function tick(){const e=event();if(!e.running)return;const now=Date.now(),seconds=Math.floor((now-lastTick)/1000);if(seconds<=0)return;lastTick+=seconds*1000;e.seconds=Math.max(0,e.seconds-seconds);if(!e.seconds){e.running=false;if(navigator.vibrate)navigator.vibrate([150,100,150]);}const clock=$('hallClock');if(clock)clock.textContent=formatClock(e.seconds);if(!e.running||now-lastBridgeCheckpoint>=12000){lastBridgeCheckpoint=now;save();}}
 setInterval(tick,300);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
 async function deleteFixture(id){
   const ev=event();
