@@ -80,14 +80,14 @@ return window.__cfSupabaseLoading.then(value=>{
         if(!user&&!document.body.classList.contains('cf-authenticated'))return;
         const previous=user?.id;
         document.body.classList.remove('cf-authenticated');
-        bridge()?.clearAccount?.();clearPrivateLocal(previous);
+        bridge()?.clearAccount?.();clearPrivateLocal(previous);clearLegacyPrototype();
         user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;
         displayStatus('Sitzung beendet. Bitte erneut anmelden.');lock();
       }else if(event==='SIGNED_IN'&&session?.user?.id&&session.user.id!==user?.id){
         const previous=user?.id;
         if(previous){
           document.body.classList.remove('cf-authenticated');
-          bridge()?.clearAccount?.();clearPrivateLocal(previous);
+          bridge()?.clearAccount?.();clearPrivateLocal(previous);clearLegacyPrototype();
           user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;lock();
         }
         setTimeout(()=>{void connect()},0);
@@ -133,7 +133,7 @@ const session=await client.auth.getSession();if(session.error)throw session.erro
 if(!session.data.session){
   const previous=user?.id;
   document.body.classList.remove('cf-authenticated');
-  bridge()?.clearAccount?.();clearPrivateLocal(previous);
+  bridge()?.clearAccount?.();clearPrivateLocal(previous);clearLegacyPrototype();
   user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;
   displayStatus('Bitte anmelden.');lock();return;
 }
