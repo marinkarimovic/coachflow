@@ -1,6 +1,6 @@
 /* CoachFlow v1.5: network-first documents; offline fallback */
-const CACHE = 'coachflow-static-v18';
-const ASSETS = ['./index.html','./manifest.webmanifest','./icon-192.png','./cloud-sync.js','./coachflow-features.js'];
+const CACHE = 'coachflow-static-v19';
+const ASSETS = ['./index.html','./manifest.webmanifest','./icon-192.png','./auth-gateway.js','./coachflow-features.js'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(ASSETS.map(path=>cache.add(path)))).then(()=>self.skipWaiting()));
 });
