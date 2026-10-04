@@ -220,9 +220,10 @@ Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das 
 - Wiederherstellungsstände werden ausschließlich unter der angemeldeten Benutzer-ID geladen. Die verschiedenen Konten bleiben voneinander getrennt.
 - Nach einer erfolgreichen Abmeldung werden benutzerspezifische Offline-Entwürfe, Wiederherstellungskopien, Timerstände und nicht mehr benötigte Prototypdaten im Browser entfernt.
 - Offene personenbezogene Oberflächen, PDF-Vorschauen und Spieltagsansichten werden beim Kontowechsel und Abmelden geschlossen bzw. geleert.
+- Die App reagiert zusätzlich auf die Authentifizierungsereignisse eines zweiten Browser-Tabs: Abmelden und Wechsel der Benutzeridentität sperren den bisherigen Trainerbereich und räumen lokale Kontodaten ab.
 - Eingaben und direkte Datenzugriffe sind bei gesperrtem Anmeldestatus blockiert. Schlägt die lokale Bereinigung fehl, erscheint eine Warnung.
 - Die bestehende Supabase-Tabelle ist durch Benutzerberechtigungen geschützt. Der Datenbankzugriff wurde mit zwei simulierten Benutzeridentitäten und der vorhandenen eigenen Benutzerzeile überprüft. Das ersetzt keinen vollständigen End-to-End-Test mit zwei realen Nutzerkonten.
 - Die Datenbank befindet sich in einer europäischen Cloud-Region. Zugriff mit administrativen Rechten bleibt technisch möglich; eine Abmeldung löscht keine Serverdaten.
 - Vor dem Einsatz mit echten Kinderdaten sind reale iPhone-Anmelde- und Abmeldetests, zusätzliche Sicherheitsprüfungen, ein Löschkonzept sowie eine organisatorische Datenschutzklärung im Verein nötig. Die App kennzeichnet sich daher ausdrücklich als Testsystem.
 - Der Authentifizierungsdienst meldet noch, dass der Schutz gegen bekannte kompromittierte Passwörter aktiviert werden sollte.
-- Offline-Cache: `coachflow-static-v23`.
+- Offline-Cache: `coachflow-static-v24`.
