@@ -72,7 +72,30 @@ script.onload=()=>window.supabase?.createClient?resolve(window.supabase.createCl
 script.onerror=()=>reject(Error('Anmeldebibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen.'));document.head.appendChild(script);
 }).catch(err=>{window.__cfSupabaseLoading=null;throw err});
 }
-return window.__cfSupabaseLoading.then(value=>{client=value;return client});
+return window.__cfSupabaseLoading.then(value=>{
+  if(!client){
+    client=value;
+    client.auth.onAuthStateChange?.((event,session)=>{
+      if(event==='SIGNED_OUT'){
+        if(!user&&!document.body.classList.contains('cf-authenticated'))return;
+        const previous=user?.id;
+        document.body.classList.remove('cf-authenticated');
+        bridge()?.clearAccount?.();clearPrivateLocal(previous);
+        user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;
+        displayStatus('Sitzung beendet. Bitte erneut anmelden.');lock();
+      }else if(event==='SIGNED_IN'&&session?.user?.id&&session.user.id!==user?.id){
+        const previous=user?.id;
+        if(previous){
+          document.body.classList.remove('cf-authenticated');
+          bridge()?.clearAccount?.();clearPrivateLocal(previous);
+          user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;lock();
+        }
+        setTimeout(()=>{void connect()},0);
+      }
+    });
+  }
+  return client;
+});
 }
 async function record(id){const r=await client.from('coachflow_state').select('state,revision').eq('user_id',id).maybeSingle();if(r.error)throw r.error;return r.data}
 function schedule(){clearTimeout(pending);pending=setTimeout(()=>{void flush()},700)}
