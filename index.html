@@ -563,7 +563,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ui.runnin
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&ui.modal){ui.modal=null;renderModal()}});
 resetTimer();
 try{const u=new URLSearchParams(location.search);if(u.get('view')==='planner'){ui.view='planner';ui.planTab=['live','rotation','plan'].includes(u.get('tab'))?u.get('tab'):'plan'}else if(u.get('view')==='library'){ui.view='library'}}catch(e){}
-window.coachflowBridge=Object.freeze({getState:()=>{if(!activeUserId)throw new Error('Bitte zuerst anmelden.');if(storageLocked)throw new Error('Lokale Daten gesperrt: bitte beschädigten Originalstand sichern und wiederherstellen.');return JSON.parse(JSON.stringify(data))},getView:()=>ui.view,mutate:(fn)=>{if(!activeUserId)throw new Error('Bitte zuerst anmelden.');if(storageLocked)throw new Error('Lokale Daten geschützt. Bitte vorher Wiederherstellung durchführen.');if(typeof fn!=='function')throw new Error('Ungültige Änderung');fn(data);save();render()},exportBackup:()=>exportData(),getAccountId:()=>activeUserId,setAccount:(userId,next)=>{if(!/^[a-f0-9-]{36}$/i.test(String(userId||'')))throw new Error('Ungültige Benutzer-ID');if(activeUserId&&activeUserId!==userId)window.CoachFlowFeatures?.resetPrivateUI?.();activeUserId=userId;storageLocked=false;storageNotice='';const stored=()=>{try{return JSON.parse(localStorage.getItem(accountKey())||'null')}catch(e){return null}};const cached=stored();data=validState(next)?JSON.parse(JSON.stringify(next)):validState(cached)?cached:freshBlank();if(!data.exercises.some(x=>x.id===PRESSURE_CHALLENGE.id))data.exercises.push({...PRESSURE_CHALLENGE});try{localStorage.setItem(accountKey(),JSON.stringify(data))}catch(e){notify('Lokaler Speicher ist voll. Bitte prüfen.')}ui.modal=null;ui.view='home';ui.planTab='plan';ui.liveFocus=false;resetTimer();render()},clearAccount:()=>{
+window.coachflowBridge=Object.freeze({getState:()=>{if(!activeUserId||!document.body.classList.contains('cf-authenticated'))throw new Error('Bitte zuerst anmelden.');if(storageLocked)throw new Error('Lokale Daten gesperrt: bitte beschädigten Originalstand sichern und wiederherstellen.');return JSON.parse(JSON.stringify(data))},getView:()=>ui.view,mutate:(fn)=>{if(!activeUserId||!document.body.classList.contains('cf-authenticated'))throw new Error('Bitte zuerst anmelden.');if(storageLocked)throw new Error('Lokale Daten geschützt. Bitte vorher Wiederherstellung durchführen.');if(typeof fn!=='function')throw new Error('Ungültige Änderung');fn(data);save();render()},exportBackup:()=>exportData(),getAccountId:()=>activeUserId,setAccount:(userId,next)=>{if(!/^[a-f0-9-]{36}$/i.test(String(userId||'')))throw new Error('Ungültige Benutzer-ID');if(activeUserId&&activeUserId!==userId)window.CoachFlowFeatures?.resetPrivateUI?.();activeUserId=userId;storageLocked=false;storageNotice='';const stored=()=>{try{return JSON.parse(localStorage.getItem(accountKey())||'null')}catch(e){return null}};const cached=stored();data=validState(next)?JSON.parse(JSON.stringify(next)):validState(cached)?cached:freshBlank();if(!data.exercises.some(x=>x.id===PRESSURE_CHALLENGE.id))data.exercises.push({...PRESSURE_CHALLENGE});try{localStorage.setItem(accountKey(),JSON.stringify(data))}catch(e){notify('Lokaler Speicher ist voll. Bitte prüfen.')}ui.modal=null;ui.view='home';ui.planTab='plan';ui.liveFocus=false;resetTimer();render()},clearAccount:()=>{
   activeUserId=null;data=freshBlank();ui.view='home';ui.modal=null;ui.liveFocus=false;ui.matchMode='funino';ui.matchGameId=null;ui.historyId=null;ui.balanceMoves=[];ui.running=false;ui.timerStamp=0;
   window.CoachFlowFeatures?.resetPrivateUI?.();
   const modal=qs('#modal-root');if(modal)modal.replaceChildren();
@@ -586,10 +586,10 @@ window.CoachFlowMatchday=Object.freeze({
     return {ok:true};
   },
   ready:()=>!!activeUserId&&document.body.classList.contains('cf-authenticated'),
-  getTeam:()=>String(data.team||'Mein Team'),
-  getRoster:()=>cfMatchRoster(),
+  getTeam:()=>activeUserId&&document.body.classList.contains('cf-authenticated')?String(data.team||'Mein Team'):'Mein Team',
+  getRoster:()=>activeUserId&&document.body.classList.contains('cf-authenticated')?cfMatchRoster():[],
   getModeState:mode=>{
-    if(!activeUserId||!['funino','hall'].includes(mode))return null;
+    if(!activeUserId||!document.body.classList.contains('cf-authenticated')||!['funino','hall'].includes(mode))return null;
     const source=cfMatchStore()[mode];return source?JSON.parse(JSON.stringify(source)):null;
   },
   saveMode:(mode,next)=>{
