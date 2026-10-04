@@ -200,11 +200,12 @@
   function saveTournament(){if(!ui.proposal)return;const t=ui.proposal;if(!validDate(t.date)){notice('Bitte ein gültiges Datum eingeben.');return}if(!t.teams.every(team=>team.members.length>0)){notice('Mindestens ein Team ist leer. Bitte Kinder zuweisen.');return}if(!confirm('Diese Aufstellung speichern? Stamm- und Tagesgruppen bleiben unverändert.'))return;const newItem=JSON.parse(JSON.stringify({...t,id:t.id||('turnier-'+Date.now())}));commit((d,x)=>{const i=x.tournaments.findIndex(it=>it.id===newItem.id);if(i<0)x.tournaments.push(newItem);else x.tournaments[i]=newItem});ui.proposal=newItem;draw();notice('Turnieraufstellung lokal gespeichert. Für Cloud-Sicherung die Cloud-Funktion öffnen.')}
 
   function exportMatchday(){
-    const d=read(),p=ui.proposal;if(!p||!p.teams?.length){notice('Zuerst Teams erstellen oder eine Aufstellung öffnen.');return;}
+    let d=read();const p=ui.proposal;if(!p||!p.teams?.length){notice('Zuerst Teams erstellen oder eine Aufstellung öffnen.');return;}
     const squads=p.teams.map(team=>({id:String(team.id),name:String(team.name),players:(team.members||[]).map(pid=>{const player=d.players.find(x=>x.id===pid);return player?{id:String(player.id),name:String(player.name)}:null}).filter(Boolean)}));
     const ids=squads.flatMap(t=>t.players.map(p=>p.id));
     if(!ids.length||new Set(ids).size!==ids.length){notice('Doppelte oder fehlende Spieler-IDs. Bitte Aufstellung überprüfen.');return;}
-    const doc={schema:'sport-coach-bridge-v1',kind:'lineup',eventId:String(p.id||p.createdAt||'proposal-'+p.date),eventName:String(p.title),date:String(p.date),club:String(d.team||''),age:String(d.age||''),teams:squads,createdAt:new Date().toISOString()};
+    if(!extras(d).rosterId){const newRosterId='roster-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));commit((_state,x)=>{x.rosterId||=newRosterId});d=read();}
+    const doc={schema:'sport-coach-bridge-v1',kind:'lineup',eventId:String(p.id||p.createdAt||'proposal-'+p.date),eventName:String(p.title),date:String(p.date),rosterId:String(extras(d).rosterId),club:String(d.team||''),age:String(d.age||''),teams:squads,createdAt:new Date().toISOString()};
     if(!confirm('Matchday-Datei mit '+ids.length+' Spielernamen exportieren? Die Datei enthält personenbezogene Daten. Bitte nur privat weitergeben.'))return;
     const blob=new Blob([JSON.stringify(doc,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
     link.href=url;link.download='SpielfeldIQ-Matchday-'+p.date+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);notice('Matchday-Aufstellung exportiert. Öffne FUNiño Matchday und importiere dort die Datei.');
@@ -215,6 +216,7 @@
       const report=JSON.parse(await file.text()),d=read();
       if(report.schema!=='sport-coach-matchday-results-v1'||typeof report.eventId!=='string'||!Array.isArray(report.games))throw Error('Falsches Matchday-Format');
       if(report.eventId.length>140||report.games.length>100)throw Error('Datei nicht unterstützt');
+      if(!extras(d).rosterId||report.rosterId!==extras(d).rosterId)throw Error('Falscher Kader. Der Spielzeitbericht gehört zu einer anderen SpielfeldIQ-Spielerliste.');
       const ids=new Set(d.players.map(x=>x.id));let known=0;
       const games=report.games.map(game=>{
         if(!Number.isInteger(game.game)||game.game<1||game.game>100||!game.minutes||typeof game.minutes!=='object')throw Error('Ungültige Spielzeiten');
