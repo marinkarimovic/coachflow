@@ -1,6 +1,6 @@
-# SpielfeldIQ · Coaching Companion (Prototyp v2.0, GitHub-Projekt: CoachFlow)
+# SpielfeldIQ · Coaching Companion (Prototyp v2.3, GitHub-Projekt: CoachFlow)
 
-Mobiloptimierte, lokal-first PWA zur Fußballtrainingsplanung und Trainingsdurchführung. Die öffentliche GitHub-Codebasis enthält ausschließlich Demokinder und anonymisierte Trainerbezeichnungen. Eine optionale private Supabase-Anmeldung und manuelle Cloud-Sicherung sind vorhanden; noch keine gemeinsame Vereinsdatenbank.
+Mobiloptimierte, lokal-first PWA zur Fußballtrainingsplanung und Trainingsdurchführung. Die öffentliche GitHub-Codebasis enthält ausschließlich Demokinder und anonymisierte Trainerbezeichnungen. Die Haupt-App startet mit Supabase-Anmeldung, benutzerbezogenem Dashboard und automatischer Speicherung; gemeinsame Vereinsfreigaben sind noch nicht enthalten.
 
 ## Funktionen
 - 16 Beispielübungen plus eigene Einträge, Filter, Favoriten und Trainingsstatistik.
@@ -18,7 +18,7 @@ GitHub → Repository → **Settings → Pages** → Deploy from a branch → `m
 Öffne die veröffentlichte Website in Safari → Teilen → **Zum Home-Bildschirm**.
 
 ### Update vorhandener Home-Screen-Installationen
-Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht geladen wird, einmal in Safari öffnen und aktualisieren. Die Service-Worker-Version `coachflow-static-v18` verwendet für die HTML-Seite nun network-first und lässt den lokalen Datenspeicher unverändert.
+Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht geladen wird, einmal in Safari öffnen und aktualisieren. Die Service-Worker-Version `coachflow-static-v19` verwendet für die HTML-Seite nun network-first und lässt den lokalen Datenspeicher unverändert.
 
 ## Hinweise
 - **Keine automatisierte KI und kein automatischer Import fremder Videoinhalte**: Vorschläge sind regelbasiert. Diagramme sind ausdrücklich schematische Beispieldarstellungen und bilden nicht notwendigerweise den Originalübungsaufbau ab.
@@ -48,7 +48,7 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v18`.
+- Offline cache version: `coachflow-static-v19`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
@@ -66,7 +66,7 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 
 ## CoachFlow v1.8 · Anwesenheit, Entwicklung und Turnierteams
 
-**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v18`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
+**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v19`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
 
 ### v1.6 – Historische Anwesenheit
 
@@ -109,7 +109,7 @@ Eine echte Vereinsplattform mit Team-Logins, Einladungen, nutzerspezifischen Fre
 
 Die öffentlich sichtbare App heißt vorläufig **SpielfeldIQ**. Der Projektname, die GitHub-URL, die Supabase-Projektkennung, die interne JavaScript-API und der bestehende localStorage-Schlüssel `coachflow-prototype-v1` bleiben aus Gründen der Datenkompatibilität unverändert. Der Name ist **nicht markenrechtlich freigegeben**; vor kommerzieller Verwendung sind Domain-, App-Store- und Markenregisterrecherche (AT/EU) erforderlich.
 
-Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v18`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
+Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v19`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
 
 Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das Repository weiterhin `coachflow` heißen.
 
@@ -150,4 +150,33 @@ Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das 
 4. Über **Nach SpielfeldIQ exportieren** die private JSON-Datei `sport-coach-matchday-results-v1` erstellen. In SpielfeldIQ unter **Teamgenerator → Spielzeit & faire Teams** importieren. Kader-ID und Spieler-IDs ordnen die Zeitwerte zu; Berichte fremder Kader werden abgewiesen und unbekannte Spieler-IDs ignoriert. Erneuter Import desselben Spieltags ersetzt erst nach erneuter Bestätigung den entsprechenden Bericht.
 5. Bereits gespeicherte Teamkonstellationen gehen im Modus **Fair durchmischen** als sanfte Wiederholungsstrafe in die Verteilung ein. Der Vorschlag ist weiterhin jederzeit manuell änderbar und kann bei kleinen oder eingeschränkten Teilnehmergruppen Wiederholungen nicht vollständig vermeiden.
 
-**Einschränkungen:** Die direkte Übernahme betrifft vorerst den Modus **FUNiño**. Der Hallenturnier-Modus verfügt noch nicht über denselben Importdialog. Keine automatische Cloud-, Live- oder Vereins-Synchronisierung; keine verlässlich vollständige Spielzeitstatistik ohne Eingabe. Bestehende JSON-Backup-, PDF-, Trainings- und Supabase-Funktionen unverändert. Der Datenspeicherschlüssel `coachflow-prototype-v1` bleibt erhalten; Service-Worker-Cache `coachflow-static-v18`.
+**Einschränkungen:** Die direkte Übernahme betrifft vorerst den Modus **FUNiño**. Der Hallenturnier-Modus verfügt noch nicht über denselben Importdialog. Keine automatische Cloud-, Live- oder Vereins-Synchronisierung; keine verlässlich vollständige Spielzeitstatistik ohne Eingabe. Bestehende JSON-Backup-, PDF-, Trainings- und Supabase-Funktionen unverändert. Der Datenspeicherschlüssel `coachflow-prototype-v1` bleibt erhalten; Service-Worker-Cache `coachflow-static-v19`.
+
+## v2.3 – Benutzerkonten und automatische Speicherung (Oktober 2026)
+
+**Wichtig:** Die PWA verwendet ab diesem Stand das bestehende Supabase-Projekt `gzrstopdqsjdrrrzzhix` und dessen Tabelle `public.coachflow_state`. Das ist die Datenbank, die bisher die manuelle CoachFlow-Cloud-Sicherung enthielt. Im selben Supabase-Account existiert außerdem ein separates, leeres Projekt `axvcoxhjxdyvktqbjznp`; dieses wird für die aktive App **nicht** verwendet.
+
+### Login-first und Datenhoheit
+- Vor dem Dashboard erscheint eine Authentifizierungsseite. Mit gültiger Supabase-Sitzung wird die private Benutzerzeile geladen.
+- E-Mail-/Passwortregistrierung und Login sind implementiert. Ob eine Bestätigungs-E-Mail versendet wird, richtet sich nach den Supabase-Auth-Einstellungen; ohne externen E-Mail-Versand kann die Registrierung für beliebige Benutzer eingeschränkt sein.
+- Buttons für **Google** (`provider: google`) und **Microsoft** (`provider: azure`, `scopes: email`) sind vorbereitet, funktionieren aber erst nach Anlegen und Freischalten der jeweiligen OAuth-App mitsamt Secret in Supabase.
+- Callback für Anbieter: `https://gzrstopdqsjdrrrzzhix.supabase.co/auth/v1/callback`. Die App-URL `https://marinkarimovic.github.io/coachflow/` muss unter Supabase Authentication → URL Configuration → Redirect URLs zugelassen sein.
+- Die öffentliche App besitzt nur den Supabase-*Publishable Key*, niemals einen Service-Role-Key. Alle Datenbankabfragen verwenden das authentifizierte Benutzerkonto und zusätzlich den Filter `user_id = user.id`.
+- RLS ist für `coachflow_state` aktiviert; vier vorhandene Policies erlauben SELECT/INSERT/UPDATE/DELETE nur für `auth.uid() = user_id`.
+- Neue Konten starten mit einem eigenen leeren Team. Alte ungebundene `coachflow-prototype-v1`-Datensätze werden nicht automatisch übernommen. Der frühere Prototypenspeicher bleibt unangetastet.
+
+### Automatische Speichersynchronisierung
+- Lokaler Entwurf pro Account unter `coachflow-account-v2-<auth-user-id>`; Nutzerwechsel mischt die lokalen Daten nicht.
+- Nach einer Änderung erfolgt ein entprellter Cloud-Speichervorgang in `coachflow_state`, inklusive optimistischem `revision`-Vergleich. Ein abweichender Cloud-Stand führt zum Stoppen des Schreibens und zu einer sichtbaren Konfliktmeldung.
+- `coachflow-pending-v2-<auth-user-id>` merkt nicht abgeschlossene Cloud-Updates lokal vor und erkennt sie beim erneuten Öffnen. Beim erneuten Login wird diese lokale Version nicht kommentarlos von einem älteren Cloud-Datensatz ersetzt.
+- Bei fehlendem Netz sind bereits gestartete Bearbeitungsvorgänge lokal nutzbar; ein *kalter Start* ohne abrufbare Supabase-Sitzung/Bibliothek kann jedoch noch kein vollwertiges Offline-Login garantieren.
+- In den Kontoeinstellungen: Sync-Status, „Jetzt synchronisieren“, bewusstes Laden des Cloud-Standes und Abmeldung. Beim Abmelden wird die accountbezogene lokale Kopie vom Gerät entfernt. Bei ausstehenden Änderungen warnt die App davor.
+- **Noch keine automatische Dreiwege-Zusammenführung** bei Änderungen auf mehreren Geräten; Cloud-Laden verwirft ausdrücklich lokale Änderungen, nur nach Bestätigung.
+
+### Security/Launch-Checkliste
+- Supabase Security Advisor meldet `auth_leaked_password_protection`: **Leaked Password Protection Disabled**. Vor Veröffentlichung [Schutz gegen geleakte Passwörter einschalten](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+- Für Google: OAuth-App anlegen, Supabase Auth → Providers → Google aktivieren und Client ID/Secret hinterlegen; gleiche Redirect URLs freischalten.
+- Für Microsoft: Microsoft Entra App Registration, Callback bei Entra hinterlegen, Azure-Provider in Supabase mit Client ID/Secret konfigurieren; für Microsoft den `email`-Scope verwenden.
+- Einen SMTP-Mailanbieter für Registrierung und Passwortreset konfigurieren, E-Mail-Bestätigungen testen.
+- Auth und RLS mit mehreren getrennten Testbenutzern, einem zweiten Gerät und Netzwerkunterbrechungen end-to-end testen.
+- Die Zusammenführung mit FUNiño/Hallenturnier in **derselben PWA und demselben User-Datenmodell** ist der nächste eigenständige Integrationsschritt; bisher sind es noch getrennte Repositories bzw. JSON-Transfers.
