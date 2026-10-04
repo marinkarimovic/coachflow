@@ -1,8 +1,8 @@
 {
-  "name": "CoachFlow – Trainingszentrale",
-  "short_name": "CoachFlow",
+  "name": "SpielfeldIQ – Trainingszentrale",
+  "short_name": "SpielfeldIQ",
   "id": "./",
-  "description": "Fußballtrainingsplanung mit Übungen, Gruppen, Rotationen und Historie.",
+  "description": "Fußballtraining, Anwesenheit, Spielerentwicklung und Turniermannschaften.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
