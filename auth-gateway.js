@@ -5,6 +5,10 @@ const URL_ = 'https://gzrstopdqsjdrrrzzhix.supabase.co';
 const KEY_ = 'sb_publishable_X26Q5o8MAkS-QSTMYN-lYg_vyVpeag3';
 const SDK='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js';
 const REDIRECT=location.origin+location.pathname.replace(/(?:index\.html)?$/,'');
+const PENDING_PREFIX='coachflow-pending-v2-';
+const USER_PREFIX='coachflow-account-v2-';
+const pendingKey=id=>PENDING_PREFIX+id;
+const localKey=id=>USER_PREFIX+id;
 let client=null, user=null, revision=null, dirty=false, conflict=false, busy=false, connecting=false, sending=false, change=0, pending=null, run=0;
 let status='Anmeldung wird geladen …', error='', stage='login';
 const get=id=>document.getElementById(id);
@@ -13,6 +17,7 @@ const bridge=()=>window.coachflowBridge;
 const snapshot=()=>bridge()?.getState?.();
 function displayStatus(text,failed){
   status=text;error=failed?text:'';
+  const pill=get('cf-sync-pill');if(pill){pill.textContent=text;pill.title=text;pill.classList.toggle('error',!!failed)}
   const statusEl=get('cloud-indicator');
   if(statusEl){statusEl.textContent=text;statusEl.className='notice '+(failed?'red':'green')}
 }
@@ -74,12 +79,12 @@ if(result.error){
 }
 if(!result.data){conflict=true;displayStatus('Versionskonflikt: anderes Gerät hat neuere Daten. Kein automatisches Überschreiben.',true);return;}
 revision=Number(result.data.revision);
-if(change===version){dirty=false;displayStatus('☁ Alles gespeichert · Version '+revision)}
+if(change===version){dirty=false;try{localStorage.removeItem(pendingKey(startedFor))}catch(e){}displayStatus('☁ Alles gespeichert · Version '+revision)}
 else{dirty=true;displayStatus('Weitere Änderungen warten auf Synchronisierung');}
 }catch(err){if(startedFor===user?.id)displayStatus('Lokal gespeichert; Cloud derzeit nicht erreichbar: '+err.message,true)}
 finally{sending=false;if(user?.id===startedFor&&dirty&&!conflict&&change!==version)schedule()}
 }
-function saved(){if(!user||!document.body.classList.contains('cf-authenticated'))return;change++;dirty=true;displayStatus(navigator.onLine?'● Änderungen werden synchronisiert …':'Offline · Änderungen auf diesem Gerät gespeichert');if(navigator.onLine)schedule()}
+function saved(){if(!user||!document.body.classList.contains('cf-authenticated'))return;change++;dirty=true;try{const previous=JSON.parse(localStorage.getItem(pendingKey(user.id))||'null');localStorage.setItem(pendingKey(user.id),JSON.stringify({revision:previous?.revision??revision,at:new Date().toISOString()}))}catch(e){}displayStatus(navigator.onLine?'● Änderungen werden synchronisiert …':'Offline · Änderungen auf diesem Gerät gespeichert');if(navigator.onLine)schedule()}
 async function connect(){
 if(connecting)return;connecting=true;const generation=++run;
 try{
@@ -90,11 +95,21 @@ const verified=await client.auth.getUser();if(verified.error)throw verified.erro
 const found=verified.data.user;if(!found)throw Error('Keine gültige Benutzersitzung');
 if(user?.id===found.id){unlock();return}
 const data=await record(found.id);if(generation!==run)return;
+let localPending=null,localState=null;
+try{localPending=JSON.parse(localStorage.getItem(pendingKey(found.id))||'null');localState=JSON.parse(localStorage.getItem(localKey(found.id))||'null')}catch(e){}
+const localValid=localState&&Array.isArray(localState.players)&&Array.isArray(localState.exercises)&&localState.current&&Array.isArray(localState.sessions);
 user=found;revision=data?Number(data.revision):null;dirty=false;conflict=false;change=0;
-bridge()?.setAccount?.(found.id,data?.state||null);
+if(localPending&&localValid){
+  bridge()?.setAccount?.(found.id,localState);dirty=true;change=1;
+  if(localPending.revision!==revision){conflict=true;displayStatus('Lokale Änderungen und Cloud-Version unterscheiden sich. Keine Daten überschrieben. Bitte im Konto prüfen.',true)}
+  else displayStatus('Lokal zwischengespeicherte Änderungen werden nachgeholt.');
+}else{
+  bridge()?.setAccount?.(found.id,data?.state||null);
+}
 unlock();
-displayStatus('Angemeldet: '+(found.email||'Konto')+(data?' · Version '+revision:' · Neuer Benutzerbereich'));
-if(!data){dirty=true;change++;schedule()}
+if(!conflict&&localPending&&localValid)schedule();
+else if(!conflict&&!data){dirty=true;change++;schedule()}
+else if(!conflict)displayStatus('Angemeldet: '+(found.email||'Konto')+' · Cloud-Version '+revision);
 }catch(err){displayStatus('Anmeldung oder Datenabruf fehlgeschlagen: '+String(err?.message||err),true);lock()}
 finally{connecting=false}
 }
@@ -128,15 +143,15 @@ catch(e){gateNotice(e.message,true)}finally{setBusy(false)}
 async function reloadCloud(){
 if(!user)return;
 if(!window.confirm('Die Cloud-Version auf dieses Gerät laden? Nicht synchronisierte lokale Änderungen werden verworfen.'))return;
-try{const remote=await record(user.id);if(!remote){displayStatus('Noch kein Cloud-Datensatz für dieses Konto.');return}conflict=false;dirty=false;revision=Number(remote.revision);bridge()?.setAccount(user.id,remote.state);displayStatus('Cloud-Version '+revision+' geladen.')}
+try{const remote=await record(user.id);if(!remote){displayStatus('Noch kein Cloud-Datensatz für dieses Konto.');return}conflict=false;dirty=false;revision=Number(remote.revision);try{localStorage.removeItem(pendingKey(user.id))}catch(e){}bridge()?.setAccount(user.id,remote.state);displayStatus('Cloud-Version '+revision+' geladen.')}
 catch(e){displayStatus('Cloud-Version konnte nicht geladen werden: '+e.message,true)}
 }
 async function logout(){
 if(!client)return;
-if(dirty&&!window.confirm('Es gibt noch nicht synchronisierte Änderungen. Trotzdem abmelden?'))return;
+if((dirty||conflict)&&!window.confirm('Es gibt noch nicht synchronisierte oder widersprüchliche Änderungen. Wenn du dich abmeldest, kann die lokale Kopie verloren gehen. Trotzdem abmelden?'))return;
 try{
 const id=user?.id;clearTimeout(pending);await client.auth.signOut();run++;user=null;revision=null;dirty=false;conflict=false;
-if(id){try{localStorage.removeItem('coachflow-account-v2-'+id)}catch(e){}}
+if(id){try{localStorage.removeItem(localKey(id));localStorage.removeItem(pendingKey(id))}catch(e){}}
 bridge()?.clearAccount?.();displayStatus('Abgemeldet.');lock();
 }catch(e){displayStatus('Abmeldung fehlgeschlagen: '+e.message,true)}
 }
@@ -151,7 +166,7 @@ case'cloud-reload':void reloadCloud();break;
 case'cloud-signout':void logout();break;
 }});
 window.addEventListener('online',()=>{if(user&&dirty&&!conflict)schedule();else if(!user)void connect()});
-window.CoachFlowAuth=Object.freeze({onSaved:saved,connect:connect,status:()=>({authenticated:!!user,id:user?.id||null,revision,dirty,conflict}),signOut:logout});
+window.CoachFlowAuth=Object.freeze({onSaved:saved,connect:connect,status:()=>({authenticated:!!user,id:user?.id||null,revision,dirty,conflict}),paintStatus:()=>displayStatus(status,!!error),signOut:logout});
 window.CoachFlowCloud=Object.freeze({refresh:()=>displayStatus(status,!!error)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{markup();void connect()});else{markup();void connect()}
 })();
