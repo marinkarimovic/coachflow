@@ -1,4 +1,4 @@
-# SpielfeldIQ · Coaching Companion (Prototyp v2.3, GitHub-Projekt: CoachFlow)
+# SpielfeldIQ · Unified Coaching Companion (Prototyp v2.4, GitHub-Projekt: CoachFlow)
 
 Mobiloptimierte, lokal-first PWA zur Fußballtrainingsplanung und Trainingsdurchführung. Die öffentliche GitHub-Codebasis enthält ausschließlich Demokinder und anonymisierte Trainerbezeichnungen. Die Haupt-App startet mit Supabase-Anmeldung, benutzerbezogenem Dashboard und automatischer Speicherung; gemeinsame Vereinsfreigaben sind noch nicht enthalten.
 
@@ -6,9 +6,9 @@ Mobiloptimierte, lokal-first PWA zur Fußballtrainingsplanung und Trainingsdurch
 - 16 Beispielübungen plus eigene Einträge, Filter, Favoriten und Trainingsstatistik.
 - Eigene schematische Spielfeldgrafiken pro Übung, Bild-URLs, YouTube-Einbettung **erst nach Klick** und Links zu Instagram-Reels.
 - Trainingsplaner mit zeitlichem Ablauf, veränderbaren Übungen, Trainern, Gruppen und automatischer Rotation.
-- 24 Demokinder in vier Stammgruppen. Anwesenheit und Tagesumbesetzungen sind von Stammgruppen getrennt.
+- Neue Benutzer erhalten ein **leeres Team**; für Vorführungen existieren weiterhin Beispielübungen und ein nicht automatisch zugewiesener Demodatensatz. Anwesenheit und Tagesumbesetzungen sind von Stammgruppen getrennt.
 - Live-Training mit Countdown und Bestätigung wirklich durchgeführter Übungen.
-- Fünf historische Beispiel-Trainingsvorbereitungen vom September/Oktober 2026.
+- Historische Beispiel-Trainingsvorbereitungen bleiben nur für gezielte Demozwecke im Quellcode verfügbar; neue Benutzer starten ohne diese Historie.
 - **A4-PDF-Export ohne window.print()**: Trainingsplan direkt im Browser erzeugen; „PDF ansehen“, „Auf iPhone teilen“, „PDF herunterladen“.
 - Links zu DFB Training Online (Bambini/F-Jugend), FIFA Training Centre und UEFA Grassroots. Externe Übungen und Medien werden nicht kopiert.
 - JSON-Backup und lokaler Speicher.
@@ -18,11 +18,11 @@ GitHub → Repository → **Settings → Pages** → Deploy from a branch → `m
 Öffne die veröffentlichte Website in Safari → Teilen → **Zum Home-Bildschirm**.
 
 ### Update vorhandener Home-Screen-Installationen
-Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht geladen wird, einmal in Safari öffnen und aktualisieren. Die Service-Worker-Version `coachflow-static-v20` verwendet für die HTML-Seite nun network-first und lässt den lokalen Datenspeicher unverändert.
+Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht geladen wird, einmal in Safari öffnen und aktualisieren. Die Service-Worker-Version `coachflow-static-v21` verwendet für die HTML-Seite nun network-first und lässt den lokalen Datenspeicher unverändert.
 
 ## Hinweise
 - **Keine automatisierte KI und kein automatischer Import fremder Videoinhalte**: Vorschläge sind regelbasiert. Diagramme sind ausdrücklich schematische Beispieldarstellungen und bilden nicht notwendigerweise den Originalübungsaufbau ab.
-- Lokale Daten liegen im `localStorage` des jeweiligen Browsers. Optionale private Sicherung und Geräteübertragung über Supabase erfolgt nur manuell, nicht fortlaufend. Keine echten personenbezogenen Daten in diesem öffentlichen Repository ablegen.
+- Accountbezogene lokale Entwürfe liegen im `localStorage` des jeweiligen Browsers, die private Cloud-Speicherung in Supabase wird automatisch ausgelöst. Bei konkurrierenden Bearbeitungen stoppt der Revisionsschutz das Überschreiben. Keine personenbezogenen Daten in dieses öffentliche Repository committen.
 - Externe Bild-URLs laden Bilder vom jeweiligen Anbieter; YouTube wird erst nach aktivem Klick eingebettet. Geeignete Bildrechte und Datenschutz beachten.
 - Vor einem Zurücksetzen oder Browserwechsel ein Backup unter ⋯ → Datenexport erstellen.
 - PDF-Teilen nutzt die vom Gerät unterstützte Web-Share-Funktion und kann je nach Safari/iOS-Konfiguration variieren. Die Funktionen „PDF ansehen“ und „Herunterladen“ stehen als Alternativen bereit.
@@ -48,7 +48,7 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v20`.
+- Offline cache version: `coachflow-static-v21`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
@@ -66,7 +66,7 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 
 ## CoachFlow v1.8 · Anwesenheit, Entwicklung und Turnierteams
 
-**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v20`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
+**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v21`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
 
 ### v1.6 – Historische Anwesenheit
 
@@ -109,7 +109,7 @@ Eine echte Vereinsplattform mit Team-Logins, Einladungen, nutzerspezifischen Fre
 
 Die öffentlich sichtbare App heißt vorläufig **SpielfeldIQ**. Der Projektname, die GitHub-URL, die Supabase-Projektkennung, die interne JavaScript-API und der bestehende localStorage-Schlüssel `coachflow-prototype-v1` bleiben aus Gründen der Datenkompatibilität unverändert. Der Name ist **nicht markenrechtlich freigegeben**; vor kommerzieller Verwendung sind Domain-, App-Store- und Markenregisterrecherche (AT/EU) erforderlich.
 
-Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v20`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
+Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v21`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
 
 Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das Repository weiterhin `coachflow` heißen.
 
@@ -142,7 +142,7 @@ Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das 
 - JavaScript-Syntax, Renderlogik des Fokusscreens sowie isolierte Tests der Abschlussprüfung, des beschädigten Speichers und der Wiederaufnahme des Timers wurden geprüft.
 - Eine vollständige echte iPhone-/Safari-End-to-End-Prüfung bleibt offen. Bitte bestehende Home-Screen-Installationen **nicht** löschen; vor dem ersten produktiven Einsatz ein JSON-Backup erstellen.
 
-## Version 2.1: SpielfeldIQ ↔ FUNiño Matchday (lokaler, privater Dateiaustausch)
+## Historisch: Version 2.1 – optionaler Dateiaustausch mit dem alten, getrennten FUNiño-Prototyp
 
 1. In SpielfeldIQ: **Teamgenerator** → Aufstellung erstellen oder gespeicherte Aufstellung laden → **Matchday-Datei**. Das JSON-Dokument `sport-coach-bridge-v1` enthält ausschließlich Spieltag, Teamnamen und die stabile, einmalig gespeicherte Kader-ID sowie die `id`/`name`-Werte der ausgewählten Spieler. Keine Leistungsstufen, Geburtsdaten oder komplette Vereinsdaten werden exportiert. Bei echten Kinderdaten Datei privat aufbewahren und nach Bedarf löschen.
 2. In FUNiño Matchday unter **SpielfeldIQ ↔ Matchday**: Datei auswählen → Mannschaft auswählen → ausdrücklich importieren. Ein bereits laufendes Turnier kann dadurch nicht überschrieben werden; die Matchday-App erstellt zusätzlich eine letzte Vorher-Kopie im lokalen Speicher. Safari und iOS-Homescreen-PWA können verschiedene lokale Speicherbereiche haben, deshalb wird kein automatischer browserübergreifender Zugriff behauptet.
@@ -150,7 +150,7 @@ Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das 
 4. Über **Nach SpielfeldIQ exportieren** die private JSON-Datei `sport-coach-matchday-results-v1` erstellen. In SpielfeldIQ unter **Teamgenerator → Spielzeit & faire Teams** importieren. Kader-ID und Spieler-IDs ordnen die Zeitwerte zu; Berichte fremder Kader werden abgewiesen und unbekannte Spieler-IDs ignoriert. Erneuter Import desselben Spieltags ersetzt erst nach erneuter Bestätigung den entsprechenden Bericht.
 5. Bereits gespeicherte Teamkonstellationen gehen im Modus **Fair durchmischen** als sanfte Wiederholungsstrafe in die Verteilung ein. Der Vorschlag ist weiterhin jederzeit manuell änderbar und kann bei kleinen oder eingeschränkten Teilnehmergruppen Wiederholungen nicht vollständig vermeiden.
 
-**Einschränkungen:** Die direkte Übernahme betrifft vorerst den Modus **FUNiño**. Der Hallenturnier-Modus verfügt noch nicht über denselben Importdialog. Keine automatische Cloud-, Live- oder Vereins-Synchronisierung; keine verlässlich vollständige Spielzeitstatistik ohne Eingabe. Bestehende JSON-Backup-, PDF-, Trainings- und Supabase-Funktionen unverändert. Der Datenspeicherschlüssel `coachflow-prototype-v1` bleibt erhalten; Service-Worker-Cache `coachflow-static-v20`.
+**Einschränkungen:** Die direkte Übernahme betrifft vorerst den Modus **FUNiño**. Der Hallenturnier-Modus verfügt noch nicht über denselben Importdialog. Keine automatische Cloud-, Live- oder Vereins-Synchronisierung; keine verlässlich vollständige Spielzeitstatistik ohne Eingabe. Bestehende JSON-Backup-, PDF-, Trainings- und Supabase-Funktionen unverändert. Der Datenspeicherschlüssel `coachflow-prototype-v1` bleibt erhalten; Service-Worker-Cache `coachflow-static-v21`.
 
 ## v2.3 – Benutzerkonten und automatische Speicherung (Oktober 2026)
 
@@ -179,4 +179,38 @@ Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das 
 - Für Microsoft: Microsoft Entra App Registration, Callback bei Entra hinterlegen, Azure-Provider in Supabase mit Client ID/Secret konfigurieren; für Microsoft den `email`-Scope verwenden.
 - Einen SMTP-Mailanbieter für Registrierung und Passwortreset konfigurieren, E-Mail-Bestätigungen testen.
 - Auth und RLS mit mehreren getrennten Testbenutzern, einem zweiten Gerät und Netzwerkunterbrechungen end-to-end testen.
-- Die Zusammenführung mit FUNiño/Hallenturnier in **derselben PWA und demselben User-Datenmodell** ist der nächste eigenständige Integrationsschritt; bisher sind es noch getrennte Repositories bzw. JSON-Transfers.
+- Die Zusammenführung von FUNiño/Hallenturnier unter **derselben PWA und demselben User-Datenmodell** wurde in v2.4 ergänzt. Die ursprünglichen eigenständigen GitHub-Repositories bleiben als getrennte historische Prototypen bestehen.
+
+## v2.4 – Unified Matchday (Oktober 2026)
+
+**Ziel:** Trainingsplanung, Team, FUNiño und Hallenturnier unter **einer** angemeldeten PWA, mit **einem** Kader und **automatisch gespeicherten Spieltagsdaten**. Kein JSON-Export/Import mehr für den normalen Trainerablauf.
+
+### Oberfläche und Spielregeln
+- Neuer sechster Hauptnavigationspunkt **Spieltag** mit den internen Modi **⚽ FUNiño** und **🏆 Hallenturnier**.
+- Die beiden bewährten Engine-Oberflächen wurden als *same-origin* eingebettete Unterseiten `matchday-funino.html` und `matchday-hall.html` plus `matchday-hall.js` in das Haupt-Repository kopiert. Sie sind **keine separaten installierten Apps** und greifen nur über `window.parent.CoachFlowMatchday` auf den angemeldeten Host zu. Beim direkten Öffnen ohne Host wird keine Benutzerdatenansicht aufgebaut.
+- FUNiño übernimmt Sieben-Spiele-Ablauf, Torerfassung, Felder und Auf-/Abstiege; Hallenturnier übernimmt die bestehende Turnierliste, Gruppen, Vorrunde, K.-o.-Runde, Spielplan-Import und Live-Match.
+- Spieltag zeigt eine auswählbare Teilmenge des Hauptkaders; die ausgewählten Spieler behalten ihre ursprünglichen eindeutigen `id`-Werte. Für FUNiño werden maximal 30 Teilnehmende übernommen. Stammdaten werden **nicht** in den eingebetteten Setup-Feldern geändert.
+- Gespeicherte Turniermannschaften können direkt in der Spieltagsansicht übernommen werden. Im Teamgenerator gibt es statt des vorherigen Dateiexports den Button **„Im Spieltag öffnen“** für die gewählte Mannschaft.
+- Beim Wechsel des Spielmodus oder Verlassen von Spieltag wird die aktive Spieluhr pausiert und der zuletzt berechnete Stand gesichert. Während einer laufenden Runde werden Countdown-Zwischenstände ca. alle 12 Sekunden gespeichert; Tore und abgeschlossene Spiele sofort.
+
+### Datenspeicherung und Auswertung
+- `data.matchdayV1` enthält `selectedIds`, `funino` und `hall` **innerhalb desselben** benutzerspezifischen `coachflow_state.state`-JSONB. Die App verwendet dafür die bestehende Authentifizierung und Row Level Security; keine zweite Supabase-Datenbank, neue Tabelle oder Service-Role-Key erforderlich.
+- Der Host `window.CoachFlowMatchday` stellt `ready`, `getRoster`, `getTeam`, `getModeState`, `saveMode`, `switchMode` und `openWithTeam` bereit. Der Datenaustausch erfolgt im Speicher; die vorhandene automatische Speicherroutine des Eltern-Dashboards übernimmt die Cloud-Synchronisierung.
+- Bereits gestartete FUNiño-Spiele blockieren ein unbeabsichtigtes Austauschen des Kaders. Über **Neues Turnier** kann der Modus zurückgesetzt und anschließend eine neue Mannschaft ausgewählt werden. Alte separate App-Speicherstände werden nicht automatisch migriert, weil wir bewusst einen neuen Prototypen testen.
+- Nach einem abgeschlossenen Spiel kannst du unter **Spieltag → Einsatzminuten dokumentieren** die tatsächlich gespielten Minuten je Spieler bestätigen. `0` bedeutet ausdrücklich nicht eingesetzt, *leer* bedeutet unbekannt. Es werden **keine Einsatzzeiten aus Toren, Anwesenheit oder Spieldauer erfunden**.
+- Diese bestätigten Werte stehen ohne Import in `extensionsV18.matchdayReports` und damit in **Team → Turnier-Teams → Spielzeit & faire Teams** zur Verfügung. Frühere gespeicherte Aufstellungen beeinflussen die nächste faire Durchmischung als sanfter Wiederholungsfaktor.
+- CSV/PDF- und JSON-Sicherungen können für Berichte/Backups weiterhin angeboten werden, sind aber für die normale Arbeit zwischen den Modulen nicht notwendig.
+
+### Grenzen / Test
+- *Same-origin*-Einbettung ist eine Übergangsstufe: Die Spiellogik wurde bewusst übernommen und noch nicht auf eine gemeinsame Komponentenbibliothek refaktoriert. Die Unterseiten können innerhalb des Haupt-Tabs separat scrollen.
+- Die bisherige Hallenturnier-Logik ist fußballspezifisch; die Unterstützung weiterer Sportarten braucht noch eine modulare Regel-Engine.
+- Die Supabase-Anmeldesitzung/Bibliothek muss bei einem kalten Offline-Start weiterhin verfügbar sein. Keine garantierten iOS-Hintergrundalarme, keine konfliktfreie gleichzeitige Co-Trainer-Bearbeitung, kein automatisches Teilen mit Eltern.
+- `sw.js` mit Cache `coachflow-static-v21` speichert beide eingebetteten HTML-Seiten und `matchday-hall.js` vor und verwendet bei Offline-Navigation die jeweils richtige gecachte Seite.
+- JavaScript-Syntax und isolierte Funktionen der Spieltagsansicht sowie Spieler-/Minuten-Zuordnung wurden geprüft; eine echte iPhone-/Safari-End-to-End-Abnahme steht aus.
+
+### Empfohlener Kurztest
+1. Mit E-Mail anmelden, unter **Team** sechs Testkinder anlegen und im Haupttab **Spieltag** öffnen.
+2. Sechs Kinder auswählen, FUNiño starten, Tor erzielen und ein Spiel abschließen. In **Einsatzminuten dokumentieren** die tatsächliche Einsatzzeit für ein Kind eintragen.
+3. Im Teamgenerator die Minutenstatistik öffnen und die Eintragung prüfen.
+4. Zwischen FUNiño und Hallenturnier wechseln, ein Testturnier anlegen und kontrollieren, dass Teamname und Kader unverändert übernommen werden.
+5. App neu öffnen: derselbe Benutzer sollte seine Spieltagshistorie wiedersehen. Bei einem anderen Konto dürfen die Daten nicht erscheinen.
