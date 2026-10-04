@@ -1,6 +1,6 @@
-# CoachFlow – Trainingszentrale (Prototyp v1.1)
+# SpielfeldIQ · Coaching Companion (Prototyp v2.0, GitHub-Projekt: CoachFlow)
 
-Mobiloptimierte PWA zur Fußballtrainingsplanung. Enthält ausschließlich Demo-Kinderdaten und anonymisierte Trainerbezeichnungen; kein Backend und keine Konten.
+Mobiloptimierte, lokal-first PWA zur Fußballtrainingsplanung und Trainingsdurchführung. Die öffentliche GitHub-Codebasis enthält ausschließlich Demokinder und anonymisierte Trainerbezeichnungen. Eine optionale private Supabase-Anmeldung und manuelle Cloud-Sicherung sind vorhanden; noch keine gemeinsame Vereinsdatenbank.
 
 ## Funktionen
 - 16 Beispielübungen plus eigene Einträge, Filter, Favoriten und Trainingsstatistik.
@@ -18,11 +18,11 @@ GitHub → Repository → **Settings → Pages** → Deploy from a branch → `m
 Öffne die veröffentlichte Website in Safari → Teilen → **Zum Home-Bildschirm**.
 
 ### Update vorhandener Home-Screen-Installationen
-Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht geladen wird, einmal in Safari öffnen und aktualisieren. Die Service-Worker-Version `coachflow-static-v3` verwendet für die HTML-Seite nun network-first und lässt den lokalen Datenspeicher unverändert.
+Home-Screen-App schließen und wieder öffnen. Wenn noch die alte Ansicht geladen wird, einmal in Safari öffnen und aktualisieren. Die Service-Worker-Version `coachflow-static-v15` verwendet für die HTML-Seite nun network-first und lässt den lokalen Datenspeicher unverändert.
 
 ## Hinweise
 - **Keine automatisierte KI und kein automatischer Import fremder Videoinhalte**: Vorschläge sind regelbasiert. Diagramme sind ausdrücklich schematische Beispieldarstellungen und bilden nicht notwendigerweise den Originalübungsaufbau ab.
-- Keine Synchronisierung zwischen Geräten; alle eingegebenen Kinder- und Trainingsinformationen liegen im `localStorage` des jeweiligen Browsers. Keine echten personenbezogenen Daten in diesem öffentlichen Repository ablegen.
+- Lokale Daten liegen im `localStorage` des jeweiligen Browsers. Optionale private Sicherung und Geräteübertragung über Supabase erfolgt nur manuell, nicht fortlaufend. Keine echten personenbezogenen Daten in diesem öffentlichen Repository ablegen.
 - Externe Bild-URLs laden Bilder vom jeweiligen Anbieter; YouTube wird erst nach aktivem Klick eingebettet. Geeignete Bildrechte und Datenschutz beachten.
 - Vor einem Zurücksetzen oder Browserwechsel ein Backup unter ⋯ → Datenexport erstellen.
 - PDF-Teilen nutzt die vom Gerät unterstützte Web-Share-Funktion und kann je nach Safari/iOS-Konfiguration variieren. Die Funktionen „PDF ansehen“ und „Herunterladen“ stehen als Alternativen bereit.
@@ -48,7 +48,7 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v14`.
+- Offline cache version: `coachflow-static-v15`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
@@ -66,7 +66,7 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 
 ## CoachFlow v1.8 · Anwesenheit, Entwicklung und Turnierteams
 
-**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v14`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
+**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v15`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
 
 ### v1.6 – Historische Anwesenheit
 
@@ -109,6 +109,35 @@ Eine echte Vereinsplattform mit Team-Logins, Einladungen, nutzerspezifischen Fre
 
 Die öffentlich sichtbare App heißt vorläufig **SpielfeldIQ**. Der Projektname, die GitHub-URL, die Supabase-Projektkennung, die interne JavaScript-API und der bestehende localStorage-Schlüssel `coachflow-prototype-v1` bleiben aus Gründen der Datenkompatibilität unverändert. Der Name ist **nicht markenrechtlich freigegeben**; vor kommerzieller Verwendung sind Domain-, App-Store- und Markenregisterrecherche (AT/EU) erforderlich.
 
-Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v14`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
+Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v15`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
 
 Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das Repository weiterhin `coachflow` heißen.
+
+## Prototyp v2.0 – Field-first Coaching (Oktober 2026)
+
+**Kernziel:** Vorbereitung → Live-Training → bestätigte Anwesenheit → Auswertung. Die folgenden Funktionen sind im aktuellen Prototyp integriert und funktionieren mit dem bestehenden `coachflow-prototype-v1`-Speicherschlüssel.
+
+### Fokussierter Live-Trainingsmodus
+- Direktstart von der Übersicht über **Live starten**, alternativ Planer → Live-Training → **Fokusmodus öffnen**.
+- Große Start-/Pause- und Reset-Buttons, gut lesbarer Countdown, aktuelle Stationen/Trainer/Gruppen sowie Vorschau der nächsten Rotation.
+- Spontan **Tagesgruppen ausgleichen** bzw. Anwesenheit bearbeiten.
+- Ein manueller Rundenwechsel bleibt erforderlich; ein Timer-Ende wechselt die Teams nicht automatisch.
+- Der Timerzustand liegt lokal unter `coachflow-live-timer-v1` und nutzt verstrichene Uhrzeit für die Wiederaufnahme nach kurzen App-Wechseln bzw. erneutem Öffnen. iOS kann im Hintergrund laufende Skripte anhalten: **keine garantierten Hintergrundalarme**.
+
+### Anwesenheit als bestätigter Nachweis
+- Die bereits bestehende Vorauswahl „alle anwesend“ ist weiterhin **nur eine Planung**.
+- Im Team-Tab muss der Trainer die tatsächliche Liste über **Anwesenheit bestätigen** ausdrücklich freigeben, bevor er das Training abschließen kann.
+- Die Bestätigung ist an das konkrete Datum, den Kader und den An-/Abwesenheitsstand gebunden und wird bei Änderungen ungültig.
+- Abgeschlossene Trainingseinheiten archivieren nur den explizit bestätigten Stand. Die nächste Planung benötigt wieder eine separate Bestätigung.
+- Bestehende historische Vorbereitungen werden dadurch nicht nachträglich zu besuchten Trainings umklassifiziert.
+
+### Letzten lokalen Stand wiederherstellen und beschädigte Daten schützen
+- Vor jeder Änderung wird, soweit genügend Speicher verfügbar ist, der letzte gültige `coachflow-prototype-v1`-Datensatz in `coachflow-recovery-v1` gespeichert.
+- Unter **Einstellungen & Daten → Vorherigen lokalen Speicherstand wiederherstellen** kann der unmittelbar vorherige Stand nach ausdrücklicher Bestätigung geladen werden.
+- Wird beim Start ein vorhandener, aber ungültiger Primärdatensatz erkannt, bleibt dieser unverändert und lokale Änderungen/Cloud-Uploads werden bis zur Wiederherstellung blockiert. Die App zeigt einen Warnhinweis und ermöglicht den Download des ursprünglichen beschädigten Inhalts.
+- Ein Wiederherstellungspunkt ist **keine versionierte Datensicherung** und ersetzt kein regelmäßig heruntergeladenes JSON-Backup. Die Sicherung kann insbesondere bei erschöpftem Browserspeicher fehlschlagen.
+- Browser-/Geräteübergreifende automatische Synchronisierung, gemeinsame Trainerkonten, Elternkommunikation und direkter Matchday-Datenaustausch sind weiterhin **nicht** enthalten.
+
+### Validierung und Grenzen
+- JavaScript-Syntax, Renderlogik des Fokusscreens sowie isolierte Tests der Abschlussprüfung, des beschädigten Speichers und der Wiederaufnahme des Timers wurden geprüft.
+- Eine vollständige echte iPhone-/Safari-End-to-End-Prüfung bleibt offen. Bitte bestehende Home-Screen-Installationen **nicht** löschen; vor dem ersten produktiven Einsatz ein JSON-Backup erstellen.
