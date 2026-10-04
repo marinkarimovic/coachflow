@@ -1,4 +1,4 @@
-# SpielfeldIQ · Unified Coaching Companion (Prototyp v2.4, GitHub-Projekt: CoachFlow)
+# SpielfeldIQ · Unified Coaching Companion (Prototyp v2.5, GitHub-Projekt: CoachFlow)
 
 Mobiloptimierte, lokal-first PWA zur Fußballtrainingsplanung und Trainingsdurchführung. Die öffentliche GitHub-Codebasis enthält ausschließlich Demokinder und anonymisierte Trainerbezeichnungen. Die Haupt-App startet mit Supabase-Anmeldung, benutzerbezogenem Dashboard und automatischer Speicherung; gemeinsame Vereinsfreigaben sind noch nicht enthalten.
 
@@ -214,3 +214,15 @@ Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das 
 3. Im Teamgenerator die Minutenstatistik öffnen und die Eintragung prüfen.
 4. Zwischen FUNiño und Hallenturnier wechseln, ein Testturnier anlegen und kontrollieren, dass Teamname und Kader unverändert übernommen werden.
 5. App neu öffnen: derselbe Benutzer sollte seine Spieltagshistorie wiedersehen. Bei einem anderen Konto dürfen die Daten nicht erscheinen.
+
+## v2.5 – Datenschutz- und Account-Härtung
+
+- Wiederherstellungsstände werden ausschließlich unter der angemeldeten Benutzer-ID geladen. Die verschiedenen Konten bleiben voneinander getrennt.
+- Nach einer erfolgreichen Abmeldung werden benutzerspezifische Offline-Entwürfe, Wiederherstellungskopien, Timerstände und nicht mehr benötigte Prototypdaten im Browser entfernt.
+- Offene personenbezogene Oberflächen, PDF-Vorschauen und Spieltagsansichten werden beim Kontowechsel und Abmelden geschlossen bzw. geleert.
+- Eingaben und direkte Datenzugriffe sind bei gesperrtem Anmeldestatus blockiert. Schlägt die lokale Bereinigung fehl, erscheint eine Warnung.
+- Die bestehende Supabase-Tabelle ist durch Benutzerberechtigungen geschützt. Der Datenbankzugriff wurde mit zwei simulierten Benutzeridentitäten und der vorhandenen eigenen Benutzerzeile überprüft. Das ersetzt keinen vollständigen End-to-End-Test mit zwei realen Nutzerkonten.
+- Die Datenbank befindet sich in einer europäischen Cloud-Region. Zugriff mit administrativen Rechten bleibt technisch möglich; eine Abmeldung löscht keine Serverdaten.
+- Vor dem Einsatz mit echten Kinderdaten sind reale iPhone-Anmelde- und Abmeldetests, zusätzliche Sicherheitsprüfungen, ein Löschkonzept sowie eine organisatorische Datenschutzklärung im Verein nötig. Die App kennzeichnet sich daher ausdrücklich als Testsystem.
+- Der Authentifizierungsdienst meldet noch, dass der Schutz gegen bekannte kompromittierte Passwörter aktiviert werden sollte.
+- Offline-Cache: `coachflow-static-v23`.
