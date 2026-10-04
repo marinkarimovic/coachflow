@@ -264,6 +264,6 @@
   });
   document.addEventListener('keydown',e=>{if(ui.page&&e.key==='Escape')close()});
   document.addEventListener('click',e=>{const root=$("#"+ROOT_ID);if(root&&e.target===root)close()});
-  window.CoachFlowFeatures=Object.freeze({mount:launch,open,stats:(month)=>{const d=read();return d?counts(d,month):null}});
+  window.CoachFlowFeatures=Object.freeze({mount:launch,open,resetPrivateUI:()=>{ui.page=null;ui.proposal=null;ui.teamSelection=null;ui.attendanceDraft={};ui.selected=null;const root=document.getElementById(ROOT_ID);if(root)root.remove();document.body.style.overflow='';},stats:(month)=>{const d=read();return d?counts(d,month):null}});
   launch();
 })();
