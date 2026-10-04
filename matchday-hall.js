@@ -385,7 +385,7 @@ $('saveUrl').onclick=async()=>{const val=$('onlineUrl').value.trim();if(val&&!va
 };
 $('backup').onclick=()=>download('matchday-hall-sicherung.json',JSON.stringify(app,null,2),'application/json');$('restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!obj.events||typeof obj.events!=='object')throw Error('Keine passende Matchday-Sicherung');if(!await appConfirm('Die gespeicherte Hallensaison vollständig durch diese Sicherung ersetzen?','Sicherung laden','Wiederherstellen'))return;app={...defaults(),...obj};if(!Array.isArray(obj.tournaments))app.tournaments=null;for(const ev of Object.values(app.events)){ev.running=false;ev.startedAt=null;}migrateLegacy();$('teamName').value=app.team;$('roster').value=app.roster.join('\n');$('matchLength').value=app.duration;$('groupA').value=event().groups.A.join('\n');$('groupB').value=event().groups.B.join('\n');render();await appAlert('Sicherung wiederhergestellt.','Sicherung laden');}catch(err){await appAlert('Fehler beim Laden: '+err.message,'Sicherung laden');}finally{e.target.value='';}};
 $('csvExport').onclick=exportCSV;$('resetEvent').onclick=async()=>{if(await appConfirm('Alle Daten nur für dieses Hallenturnier löschen? Vorher JSON sichern.','Turnier zurücksetzen','Zurücksetzen')){const length=matchDuration();app.events[app.active]=freshEvent();app.events[app.active].duration=length;app.events[app.active].seconds=length*60;$('groupA').value='';$('groupB').value='';render();}};
-if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+/* unified PWA service worker is registered by the parent */}
 init();
 showMain('data');
 })();
