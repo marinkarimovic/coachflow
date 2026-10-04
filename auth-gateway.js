@@ -54,7 +54,8 @@ root.innerHTML='<div class="cf-auth-card" role="region" aria-label="Anmelden">'+
 '<button class="secondary" type="button" id="cf-switch">'+(create?'Ich habe bereits ein Konto':'Neues Konto erstellen')+'</button>'+
 '<button class="secondary" type="button" id="cf-magic">Alternativ: Anmeldelink per E-Mail senden</button>'+
 '<p id="cf-auth-message" class="cf-auth-status" role="status" hidden></p>'+
-'<p>Deine Spieler- und Trainingsdaten sind deinem angemeldeten Konto zugeordnet. Die App synchronisiert Änderungen automatisch.</p>'+
+'<p>Deine Spieler- und Trainingsdaten werden deinem angemeldeten Konto zugeordnet und automatisch synchronisiert.</p>'+
+'<p class="cf-auth-status">⚠ Testsystem: Bitte vor dem Einsatz mit echten Kinderdaten Verantwortlichkeiten, Elterninformation, Löschfristen und das Sicherheitskonzept klären.</p>'+
 '</div>';
 gateNotice(status==='Anmeldung wird geladen …'?'':status,!!error);
 }
