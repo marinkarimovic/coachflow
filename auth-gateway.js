@@ -9,6 +9,16 @@ const PENDING_PREFIX='coachflow-pending-v2-';
 const USER_PREFIX='coachflow-account-v2-';
 const pendingKey=id=>PENDING_PREFIX+id;
 const localKey=id=>USER_PREFIX+id;
+const RECOVERY_PREFIX='coachflow-recovery-v1-';
+const TIMER_PREFIX='coachflow-live-timer-v1-';
+function clearPrivateLocal(id){
+  if(!id)return;
+  try{for(const name of [localKey(id),pendingKey(id),RECOVERY_PREFIX+id,TIMER_PREFIX+id])localStorage.removeItem(name)}catch(e){displayStatus('Lokale Kopien konnten nicht vollständig entfernt werden. Bitte Browserdaten prüfen.',true)}
+}
+function clearLegacyPrototype(){
+  // Old prototype entries have no account identity. We do not migrate them to a signed-in user.
+  try{for(const name of ['coachflow-prototype-v1','coachflow-recovery-v1','coachflow-live-timer-v1'])localStorage.removeItem(name)}catch(e){}
+}
 let client=null, user=null, revision=null, dirty=false, conflict=false, busy=false, connecting=false, sending=false, change=0, pending=null, run=0;
 let status='Anmeldung wird geladen …', error='', stage='login';
 const get=id=>document.getElementById(id);
@@ -90,10 +100,23 @@ if(connecting)return;connecting=true;const generation=++run;
 try{
 await ensureSdk();
 const session=await client.auth.getSession();if(session.error)throw session.error;
-if(!session.data.session){if(user)bridge()?.clearAccount?.();user=null;revision=null;dirty=false;conflict=false;displayStatus('Bitte anmelden.');lock();return}
+if(!session.data.session){
+  const previous=user?.id;
+  document.body.classList.remove('cf-authenticated');
+  bridge()?.clearAccount?.();clearPrivateLocal(previous);
+  user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;
+  displayStatus('Bitte anmelden.');lock();return;
+}
 const verified=await client.auth.getUser();if(verified.error)throw verified.error;
 const found=verified.data.user;if(!found)throw Error('Keine gültige Benutzersitzung');
 if(user?.id===found.id){unlock();return}
+if(user&&user.id!==found.id){
+  // A provider/session switch must not display the preceding account while the new account hydrates.
+  document.body.classList.remove('cf-authenticated');
+  bridge()?.clearAccount?.();clearPrivateLocal(user.id);
+  user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;
+}
+lock();
 const data=await record(found.id);if(generation!==run)return;
 let localPending=null,localState=null;
 try{localPending=JSON.parse(localStorage.getItem(pendingKey(found.id))||'null');localState=JSON.parse(localStorage.getItem(localKey(found.id))||'null')}catch(e){}
@@ -150,10 +173,14 @@ async function logout(){
 if(!client)return;
 if((dirty||conflict)&&!window.confirm('Es gibt noch nicht synchronisierte oder widersprüchliche Änderungen. Wenn du dich abmeldest, kann die lokale Kopie verloren gehen. Trotzdem abmelden?'))return;
 try{
-const id=user?.id;clearTimeout(pending);await client.auth.signOut();run++;user=null;revision=null;dirty=false;conflict=false;
-if(id){try{localStorage.removeItem(localKey(id));localStorage.removeItem(pendingKey(id))}catch(e){}}
-bridge()?.clearAccount?.();displayStatus('Abgemeldet.');lock();
-}catch(e){displayStatus('Abmeldung fehlgeschlagen: '+e.message,true)}
+const id=user?.id;
+document.body.classList.remove('cf-authenticated');
+clearTimeout(pending);pending=null;
+const result=await client.auth.signOut();if(result?.error)throw result.error;
+run++;user=null;revision=null;dirty=false;conflict=false;
+bridge()?.clearAccount?.();clearPrivateLocal(id);clearLegacyPrototype();
+displayStatus('Abgemeldet.');lock();
+}catch(e){displayStatus('Abmeldung fehlgeschlagen: '+e.message,true);if(user)document.body.classList.add('cf-authenticated')}
 }
 document.addEventListener('submit',e=>{if(e.target.id!=='cf-auth-form')return;e.preventDefault();if(busy)return;const form=e.target;const email=String(form.elements.email?.value||'').trim();const password=String(form.elements.password?.value||'');if(stage==='register'&&password.length<12){gateNotice('Bitte mindestens 12 Zeichen für dein Passwort wählen.',true);return}void signIn(email,password,stage==='register')});
 document.addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn)return;switch(btn.id){
