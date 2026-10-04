@@ -33,7 +33,7 @@
     });
   }
   async function loadClient() {
-    if(!navigator.onLine) throw new Error('Keine Internetverbindung. CoachFlow bleibt lokal nutzbar.');
+    if(!navigator.onLine) throw new Error('Keine Internetverbindung. SpielfeldIQ bleibt lokal nutzbar.');
     if(!clientPromise){
       clientPromise = new Promise(function(resolve,reject) {
         if(window.supabase && window.supabase.createClient) {
@@ -234,7 +234,7 @@
       const snapshot=window.coachflowBridge.getState();
       const payload=JSON.stringify(snapshot);
       if(new TextEncoder().encode(payload).byteLength>1800000)throw new Error('Lokaler Datensatz über 1,8 MB. Bitte zuerst Bilder/Videos nur als Links speichern.');
-      if(!window.confirm('Deine CoachFlow-Daten inklusive eventuell erfasster Spielernamen als private Cloud-Sicherung speichern? Änderungen werden NICHT automatisch synchronisiert.'))return;
+      if(!window.confirm('Deine SpielfeldIQ-Daten inklusive eventuell erfasster Spielernamen als private Cloud-Sicherung speichern? Änderungen werden NICHT automatisch synchronisiert.'))return;
       let saved;
       if(!existing){
         const response=await client.from('coachflow_state').insert({user_id:user.id,state:snapshot}).select('revision').single();
@@ -261,7 +261,7 @@
       const user=await verifiedUser(client);
       const remote=await currentRecord(client,user,true);
       if(!remote){indicator('In diesem Account ist noch keine Cloud-Sicherung vorhanden.');return;}
-      if(!window.confirm('ACHTUNG: Die Cloud-Daten ersetzen die lokalen CoachFlow-Daten auf DIESEM Gerät. Sichere zuerst unter Einstellungen ein JSON-Backup. Jetzt wirklich ersetzen?'))return;
+      if(!window.confirm('ACHTUNG: Die Cloud-Daten ersetzen die lokalen SpielfeldIQ-Daten auf DIESEM Gerät. Sichere zuerst unter Einstellungen ein JSON-Backup. Jetzt wirklich ersetzen?'))return;
       window.coachflowBridge.replaceLocal(remote.state);
       cloudRevision=Number(remote.revision);
       window.coachflowBridge.message('Cloud-Daten auf diesem Gerät geladen · Version '+cloudRevision);
