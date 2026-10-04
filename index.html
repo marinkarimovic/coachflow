@@ -567,6 +567,16 @@ window.coachflowBridge=Object.freeze({getState:()=>{if(!activeUserId)throw new E
 
 // One account, one roster: child modes run as same-origin views, never as separate localStorage apps.
 window.CoachFlowMatchday=Object.freeze({
+  openWithTeam:(playerIds,mode='funino')=>{
+    if(!activeUserId||!document.body.classList.contains('cf-authenticated'))return {ok:false,reason:'Bitte zuerst anmelden.'};
+    const previous=ui.matchMode;ui.matchMode=mode==='hall'?'hall':'funino';
+    if(cfMatchStarted()){ui.matchMode=previous;return {ok:false,reason:'Für diesen Spielmodus sind bereits laufende oder abgeschlossene Spiele vorhanden. Bitte den Spieltag zuerst zurücksetzen.'}}
+    const valid=new Set(data.players.map(p=>p.id)),ids=[...new Set(playerIds||[])].filter(id=>valid.has(id));
+    if(!ids.length||ids.length>30){ui.matchMode=previous;return {ok:false,reason:'Bitte zwischen 1 und 30 gültige Spieler auswählen.'}}
+    data.matchdayV1||={};data.matchdayV1.selectedIds=ids;save();
+    ui.view='matchday';ui.matchGameId=null;ui.modal=null;render();window.scrollTo(0,0);
+    return {ok:true};
+  },
   ready:()=>!!activeUserId&&document.body.classList.contains('cf-authenticated'),
   getTeam:()=>String(data.team||'Mein Team'),
   getRoster:()=>cfMatchRoster(),
