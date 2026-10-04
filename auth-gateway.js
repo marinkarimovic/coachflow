@@ -12,12 +12,18 @@ const localKey=id=>USER_PREFIX+id;
 const RECOVERY_PREFIX='coachflow-recovery-v1-';
 const TIMER_PREFIX='coachflow-live-timer-v1-';
 function clearPrivateLocal(id){
-  if(!id)return;
-  try{for(const name of [localKey(id),pendingKey(id),RECOVERY_PREFIX+id,TIMER_PREFIX+id])localStorage.removeItem(name)}catch(e){displayStatus('Lokale Kopien konnten nicht vollständig entfernt werden. Bitte Browserdaten prüfen.',true)}
+  if(!id)return true;
+  let cleaned=true;
+  for(const name of [localKey(id),pendingKey(id),RECOVERY_PREFIX+id,TIMER_PREFIX+id]){
+    try{localStorage.removeItem(name)}catch(e){cleaned=false}
+  }
+  return cleaned;
 }
 function clearLegacyPrototype(){
   // Old prototype entries have no account identity. We do not migrate them to a signed-in user.
-  try{for(const name of ['coachflow-prototype-v1','coachflow-recovery-v1','coachflow-live-timer-v1'])localStorage.removeItem(name)}catch(e){}
+  let cleaned=true;
+  for(const name of ['coachflow-prototype-v1','coachflow-recovery-v1','coachflow-live-timer-v1'])try{localStorage.removeItem(name)}catch(e){cleaned=false}
+  return cleaned;
 }
 let client=null, user=null, revision=null, dirty=false, conflict=false, busy=false, connecting=false, sending=false, change=0, pending=null, run=0;
 let status='Anmeldung wird geladen …', error='', stage='login';
@@ -133,7 +139,11 @@ unlock();
 if(!conflict&&localPending&&localValid)schedule();
 else if(!conflict&&!data){dirty=true;change++;schedule()}
 else if(!conflict)displayStatus('Angemeldet: '+(found.email||'Konto')+' · Cloud-Version '+revision);
-}catch(err){displayStatus('Anmeldung oder Datenabruf fehlgeschlagen: '+String(err?.message||err),true);lock()}
+}catch(err){
+  document.body.classList.remove('cf-authenticated');
+  bridge()?.clearAccount?.();user=null;revision=null;dirty=false;conflict=false;clearTimeout(pending);pending=null;
+  displayStatus('Anmeldung oder Datenabruf fehlgeschlagen: '+String(err?.message||err),true);lock();
+}
 finally{connecting=false}
 }
 async function signIn(email,password,register){
@@ -178,8 +188,9 @@ document.body.classList.remove('cf-authenticated');
 clearTimeout(pending);pending=null;
 const result=await client.auth.signOut();if(result?.error)throw result.error;
 run++;user=null;revision=null;dirty=false;conflict=false;
-bridge()?.clearAccount?.();clearPrivateLocal(id);clearLegacyPrototype();
-displayStatus('Abgemeldet.');lock();
+bridge()?.clearAccount?.();
+const localClean=clearPrivateLocal(id),legacyClean=clearLegacyPrototype();
+displayStatus(localClean&&legacyClean?'Abgemeldet.':'Abgemeldet. Achtung: Einige lokale Daten konnten nicht entfernt werden. Bitte Websitedaten dieses Browsers löschen.',!(localClean&&legacyClean));lock();
 }catch(e){displayStatus('Abmeldung fehlgeschlagen: '+e.message,true);if(user)document.body.classList.add('cf-authenticated')}
 }
 document.addEventListener('submit',e=>{if(e.target.id!=='cf-auth-form')return;e.preventDefault();if(busy)return;const form=e.target;const email=String(form.elements.email?.value||'').trim();const password=String(form.elements.password?.value||'');if(stage==='register'&&password.length<12){gateNotice('Bitte mindestens 12 Zeichen für dein Passwort wählen.',true);return}void signIn(email,password,stage==='register')});
