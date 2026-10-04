@@ -48,7 +48,7 @@ Diese App dient zunächst als Prototyp. Für produktiven Vereinseinsatz sind Aut
 - Team roster group selectors are aligned; three team/history stats use a compact mobile grid.
 - History notes, training frequency, modal headings and navigation use responsive wrapping and safe areas.
 - The localStorage key remains `coachflow-prototype-v1`; existing locally saved data is not reset.
-- Offline cache version: `coachflow-static-v13`.
+- Offline cache version: `coachflow-static-v14`.
 
 
 ## Supabase – optionale persönliche Cloud-Sicherung
@@ -66,7 +66,7 @@ Im Supabase-Projekt `gzrstopdqsjdrrrzzhix` wurde die Migration `create_coachflow
 
 ## CoachFlow v1.8 · Anwesenheit, Entwicklung und Turnierteams
 
-**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v13`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
+**Status:** Im bestehenden GitHub-Pages-Prototyp integriert. Das Script `coachflow-features.js` wird zusammen mit der App offline zwischengespeichert; PWA-Cache: `coachflow-static-v14`. Die Oberfläche enthält drei zusätzliche Schaltflächen: **Monatsanwesenheit**, **Entwicklung** und **Teamgenerator**. Sie stehen auf den Hauptseiten der App zur Verfügung.
 
 ### v1.6 – Historische Anwesenheit
 
@@ -109,6 +109,6 @@ Eine echte Vereinsplattform mit Team-Logins, Einladungen, nutzerspezifischen Fre
 
 Die öffentlich sichtbare App heißt vorläufig **SpielfeldIQ**. Der Projektname, die GitHub-URL, die Supabase-Projektkennung, die interne JavaScript-API und der bestehende localStorage-Schlüssel `coachflow-prototype-v1` bleiben aus Gründen der Datenkompatibilität unverändert. Der Name ist **nicht markenrechtlich freigegeben**; vor kommerzieller Verwendung sind Domain-, App-Store- und Markenregisterrecherche (AT/EU) erforderlich.
 
-Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v13`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
+Anpassungen der seit v1.8 ergänzten Dialoge: iPhone-Safe-Area, vollständig sichtbare und beim Scrollen fixierte Überschrift, gleichmäßig breite Tabs, einspaltige Felder auf kleinen Mobilgeräten, lesbare Datumsauswahl und Trainingschips ohne Überlappung. Die individuellen Trainingspläne und Spielerbewertungen werden nicht automatisch verändert. Die PWA verwendet `coachflow-static-v14`; bei bestehender Home-Screen-Installation kann das unter iOS gespeicherte Icon-Label weiterhin „CoachFlow“ lauten. **Nicht deinstallieren**, solange lokale Daten nicht gesichert sind.
 
 Der endgültige Markenname wird vor der Vermarktung festgelegt; intern kann das Repository weiterhin `coachflow` heißen.
